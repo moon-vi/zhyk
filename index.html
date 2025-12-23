@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>项目管理系统</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --text: #1f1f1f;
+      --card: #fff;
+      --line: #eee;
+      --thead-bg: #fafafa;
+      --thead-text: #1f1f1f;
+      --row-hover-bg: #f0f9ff;
+      --row-hover-text: #1f1f1f;
+    }
+
+    body.dark-mode {
+      --bg: #1e1e1e;
+      --text: #f5f5f5;
+      --card: #2c2c2c;
+      --line: #444;
+      --thead-bg: #2d2d2d;
+      --thead-text: #f5f5f5;
+      --row-hover-bg: #2b3340;
+      --row-hover-text: #f5f5f5;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 日期输入框基础样式 */
+    .date-input {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* 深色模式自动适配 */
+    body.dark-mode .date-input {
+      background: var(--card);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    /* 聚焦效果 */
+    .date-input:focus {
+      outline: 2px solid #1677ff;
+      outline-offset: 2px;
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: var(--card) !important;
+      color: var(--text) !important;
+      border-color: var(--line) !important;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin: 0 0 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      width: calc(100% - 40px);
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      align-items: center;
+    }
+
+    button,
+    input,
+    select {
+      padding: 4px 8px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    input,
+    select,
+    button {
+      border: 1px solid #ccc;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+      background: #1677ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: #409eff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
+    }
+
+    button:active {
+      background: #1056c9;
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+    }
+
+    button:focus {
+      outline: 2px solid #ff9800;
+      outline-offset: 2px;
+    }
+
+    button.gray {
+      background: #999;
+    }
+
+    button.gray:hover {
+      background: #aaa;
+    }
+
+    button.gray:active {
+      background: #777;
+    }
+
+    button.danger {
+      background: #ff4d4f;
+    }
+
+    button.danger:hover {
+      background: #ff7875;
+    }
+
+    button.danger:active {
+      background: #d9363e;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 1600px;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 8px 10px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+      text-align: center;
+      font-size: 13px;
+      min-width: 160px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+    }
+
+    .card b {
+      font-size: 16px;
+      margin-top: 6px;
+      color: #1677ff;
+      display: block;
+    }
+
+    #mainContent {
+      position: fixed;
+      top: 180px;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    .table-container {
+      width: calc(100% - 40px);
+      margin: 0 auto;
+      height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #topBar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--bg);
+      z-index: 998;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
+    }
+
+    .topBar-inner {
+      width: calc(100% - 40px);
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 10px 0;
+      box-sizing: border-box;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      text-align: left;
+      color: var(--thead-text);
+      background: var(--thead-bg);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: inline-block;
+    }
+
+    .tag.green {
+      background: #d1f7e2;
+      color: #0f8a3b;
+      border: 1px solid #0f8a3b;
+      font-weight: bold;
+    }
+
+    .tag.red {
+      background: #ffe1e1;
+      color: #d60000;
+      border: 1px solid #d60000;
+      font-weight: bold;
+    }
+
+    .tag.lightgreen {
+      background: #e8fcd9;
+      color: #4a8f00;
+      border: 1px solid #4a8f00;
+      font-weight: bold;
+    }
+
+    /* 弹窗基础样式 */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .25);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 30px 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+      animation: fadeIn .25s ease;
+      max-width: 900px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-content h3 {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* 新增 / 编辑表单 4 列网格 */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 20px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-row label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* 第 1、2、3 行:两个字段,各占 2 列 */
+    .row-1,
+    .row-2,
+    .row-3 {
+      grid-column: span 2;
+    }
+
+    /* 备注占满一行 */
+    .full-row {
+      grid-column: 1 / -1;
+    }
+
+    /* 第 4 行:客户经理 + 课程顾问 + 课程编导 */
+    .row-4 {
+      grid-column: span 1;
+    }
+
+    .row-4-last {
+      grid-column: span 2;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .actions {
+      margin-top: auto;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+
+    /* 查看窗口 4 列网格 */
+    .view-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 20px;
+    }
+
+    .view-row {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .view-row label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .view-row.full-row {
+      grid-column: 1 / -1;
+      border-bottom: none;
+    }
+
+    .remark-box {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      white-space: pre-wrap;
+      min-height: 60px;
+    }
+
+    #deleteModal .modal-content {
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #deleteModal h3 {
+      color: #cf1322;
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #deleteModal p {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    #deleteModal .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      border-top: none;
+      padding-top: 0;
+    }
+
+    #dataTable tbody tr {
+      transition: transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+    }
+
+    #dataTable tbody tr:hover {
+      transform: scale(1.01);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      background: var(--row-hover-bg);
+      color: var(--row-hover-text);
+    }
+
+    #pagination {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: var(--card);
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, .1);
+      z-index: 999;
+    }
+
+    #loginBox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .25);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .login-panel {
+      width: 320px;
+      background: var(--card);
+      color: var(--text);
+      padding: 26px 24px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .login-panel h3 {
+      text-align: center;
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .login-panel label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .login-panel input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .login-panel input:focus {
+      border-color: #1677ff;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, .2);
+    }
+
+    .login-panel button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #1677ff;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .login-panel button:hover {
+      background: #409eff;
+    }
+
+    #userBar {
+      position: fixed;
+      top: 12px;
+      right: 20px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      padding: 6px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+      border: 1px solid var(--line);
+      z-index: 999;
+      font-size: 13px;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      background: #1677ff;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .role-tag {
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #e6f4ff;
+      color: #1677ff;
+      border: 1px solid #91caff;
+    }
+
+    .logout-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      background: #ff4d4f;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: #ff7875;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+
+    @keyframes fadeIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <div id="userBar">
+    <div class="user-avatar" id="userAvatar">U</div>
+    <span id="userName"></span>
+    <span class="role-tag" id="userRole"></span>
+    <button class="logout-btn" onclick="logout()">退出</button>
+  </div>
+
+  <div id="loginBox">
+    <div class="login-panel">
+      <h3>账号登录</h3>
+      <label>用户名</label>
+      <input id="loginUser" placeholder="请输入用户名">
+      <label>密码</label>
+      <input id="loginPass" type="password" placeholder="请输入密码">
+      <button onclick="login()">登录</button>
+    </div>
+  </div>
+
+  <div id="topBar">
+    <div class="topBar-inner">
+      <h1>项目管理系统</h1>
+      <div class="stats" id="stats"></div>
+      <div class="toolbar">
+        <button onclick="openAdd()" id="btnAdd">新增订单</button>
+        <button class="gray" onclick="exportOrdersExcel()" id="btnExport">
+          导出 Excel
+        </button>
+        <input
+          type="file"
+          id="importExcel"
+          accept=".xlsx,.xls"
+          onchange="importOrdersExcel(event)"
+          style="display:none;"
+        >
+        <button
+          id="btnImport"
+          class="gray"
+          onclick="document.getElementById('importExcel').click()"
+        >
+          导入 Excel
+        </button>
+        <input
+          type="text"
+          id="keyword"
+          placeholder="搜索项目/单位/客户/经理/电话"
+          oninput="render()"
+          style="flex:1; min-width:220px; background:var(--card); color:var(--text);"
+        >
+        <button onclick="toggleTheme()" class="gray">切换模式</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainContent">
+    <div class="table-container">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>开始时间</th>
+            <th>项目单位</th>
+            <th>项目名称</th>
+            <th>客户名</th>
+            <th>客户经理</th>
+            <th>签约金额</th>
+            <th>合同</th>
+            <th>发票</th>
+            <th>回款</th>
+            <th>提成</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="pagination"></div>
+  <!-- 新增 / 编辑弹窗 -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h3 id="modalTitle">订单信息</h3>
+
+      <div class="form-grid">
+
+        <!-- 第 1 行: 开始时间 + 项目单位 -->
+        <div class="form-row row-1">
+          <label>开始时间</label>
+          <input id="m_startDate" type="date" class="date-input">
+        </div>
+
+        <div class="form-row row-1">
+          <label>项目单位</label>
+          <input id="m_unit">
+        </div>
+
+        <!-- 第 2 行: 项目名称 + 签约金额 -->
+        <div class="form-row row-2">
+          <label>项目名称</label>
+          <input id="m_name">
+        </div>
+
+        <div class="form-row row-2" id="edit_amount_row">
+          <label>签约金额</label>
+          <input id="m_amount" type="number">
+        </div>
+
+        <!-- 第 3 行: 客户名 + 联系电话 -->
+        <div class="form-row row-3">
+          <label>客户名</label>
+          <input id="m_customer">
+        </div>
+
+        <div class="form-row row-3">
+          <label>联系电话</label>
+          <input id="m_phone">
+        </div>
+
+        <!-- 第 4 行: 客户经理 + 课程顾问 + 课程编导 -->
+        <div class="form-row row-4">
+          <label>客户经理</label>
+          <input id="m_manager">
+        </div>
+
+        <div class="form-row row-4">
+          <label>课程顾问</label>
+          <input id="m_consultant">
+        </div>
+
+        <div class="form-row row-4 row-4-last">
+          <label>课程编导</label>
+          <input id="m_director">
+        </div>
+
+        <!-- 第 5 行: 合同 + 发票 + 回款 + 提成 -->
+        <div class="form-row">
+          <label>合同</label>
+          <select id="m_contract">
+            <option>未签约</option>
+            <option>已签约</option>
+            <option>不签约</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>发票</label>
+          <select id="m_invoice">
+            <option>未开票</option>
+            <option>已开票</option>
+            <option>不开票</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>回款</label>
+          <select id="m_payment">
+            <option>未回款</option>
+            <option>已回款</option>
+            <option>少回款</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>提成</label>
+          <select id="m_commission">
+            <option>未结算</option>
+            <option>已结算</option>
+            <option>无提成</option>
+          </select>
+        </div>
+
+        <!-- 第 6 行: 备注 -->
+        <div class="form-row full-row">
+          <label>备注</label>
+          <textarea id="m_remark" rows="4"></textarea>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button onclick="saveOrder()">保存</button>
+        <button class="gray" onclick="closeModal()">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看弹窗 -->
+  <div class="modal" id="viewModal">
+    <div class="modal-content">
+      <h3>订单详情</h3>
+
+      <div id="viewBody" class="view-grid">
+
+        <!-- 第 1 行 -->
+        <div class="view-row row-1">
+          <label>开始时间</label>
+          <span id="v_startDate"></span>
+        </div>
+
+        <div class="view-row row-1">
+          <label>项目单位</label>
+          <span id="v_unit"></span>
+        </div>
+
+        <!-- 第 2 行 -->
+        <div class="view-row row-2">
+          <label>项目名称</label>
+          <span id="v_name"></span>
+        </div>
+
+        <div class="view-row row-2">
+          <label>签约金额</label>
+          <span id="v_amount"></span>
+        </div>
+
+        <!-- 第 3 行 -->
+        <div class="view-row row-3">
+          <label>客户名</label>
+          <span id="v_customer"></span>
+        </div>
+
+        <div class="view-row row-3">
+          <label>联系电话</label>
+          <span id="v_phone"></span>
+        </div>
+
+        <!-- 第 4 行 -->
+        <div class="view-row row-4">
+          <label>客户经理</label>
+          <span id="v_manager"></span>
+        </div>
+
+        <div class="view-row row-4">
+          <label>课程顾问</label>
+          <span id="v_consultant"></span>
+        </div>
+
+        <div class="view-row row-4 row-4-last">
+          <label>课程编导</label>
+          <span id="v_director"></span>
+        </div>
+
+        <!-- 第 5 行 -->
+        <div class="view-row">
+          <label>合同</label>
+          <span id="v_contract"></span>
+        </div>
+
+        <div class="view-row">
+          <label>发票</label>
+          <span id="v_invoice"></span>
+        </div>
+
+        <div class="view-row">
+          <label>回款</label>
+          <span id="v_payment"></span>
+        </div>
+
+        <div class="view-row">
+          <label>提成</label>
+          <span id="v_commission"></span>
+        </div>
+
+        <!-- 第 6 行 -->
+        <div class="view-row full-row">
+          <label>备注</label>
+          <div id="v_remark" class="remark-box"></div>
+        </div>
+
+      </div>
+
+      <div class="actions" style="margin-top:12px; border-top:none; padding-top:0;">
+        <button class="gray" onclick="closeView()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 删除弹窗 -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <h3>确认删除</h3>
+      <p id="deleteText"></p>
+      <div class="actions">
+        <button class="danger" onclick="confirmDelete()">确认删除</button>
+        <button class="gray" onclick="closeDelete()">取消</button>
+      </div>
+    </div>
+  </div>
+	
+	<!-- 完成确认弹窗 -->
+<div class="modal" id="completeModal">
+  <div class="modal-content" style="max-width:400px; text-align:center;">
+    <h3 style="color:#1677ff;">确认操作</h3>
+    <p id="completeText"></p>
+    <div class="actions" style="justify-content:center; border-top:none;">
+      <button class="danger" onclick="confirmComplete()">确认</button>
+      <button class="gray" onclick="closeComplete()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================
+   登录系统（管理员/成员/财务）
+   ============================ */
+
+const users = {
+  "001": { password: "123456", role: "admin", display: "管理员" },
+  "003": { password: "123456", role: "staff", display: "成员" },
+  "006": { password: "123456", role: "finance", display: "财务" }
+};
+
+let currentRole = localStorage.getItem("role") || null;
+
+function login() {
+  const u = document.getElementById("loginUser").value.trim();
+  const p = document.getElementById("loginPass").value.trim();
+
+  if (!users[u] || users[u].password !== p) {
+    alert("账号或密码错误");
+    return;
+  }
+
+  currentRole = users[u].role;
+  localStorage.setItem("role", currentRole);
+  localStorage.setItem("username", u);
+
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("userBar").style.display = "flex";
+
+  document.getElementById("userName").innerText = "";
+  document.getElementById("userRole").innerText = users[u].display;
+  document.getElementById("userAvatar").style.display = "none";
+
+  applyRolePermissions();
+  render();
+}
+
+function logout() {
+  localStorage.removeItem("role");
+  localStorage.removeItem("username");
+  currentRole = null;
+
+  document.getElementById("userBar").style.display = "none";
+  document.getElementById("loginBox").style.display = "flex";
+
+  const tbody = document.querySelector("#dataTable tbody");
+  if (tbody) tbody.innerHTML = "";
+
+  document.getElementById("stats").innerHTML = "";
+  document.getElementById("pagination").innerHTML = "";
+}
+// 登录窗口：按 Enter 自动登录
+document.addEventListener("keydown", function (e) {
+  const loginBox = document.getElementById("loginBox");
+  if (loginBox.style.display !== "none" && e.key === "Enter") {
+    login();
+  }
+});
+
+/* ============================
+   权限控制
+   ============================ */
+function applyRolePermissions() {
+  const btnExport = document.getElementById("btnExport");
+  const btnImport = document.getElementById("btnImport");
+  const editAmountRow = document.getElementById("edit_amount_row");
+
+  // 成员隐藏金额输入框
+  if (currentRole === "staff") {
+    if (editAmountRow) editAmountRow.style.display = "none";
+  } else {
+    if (editAmountRow) editAmountRow.style.display = "block";
+  }
+
+  // 导入导出权限
+  if (currentRole === "admin") {
+    if (btnExport) btnExport.style.display = "inline-block";
+    if (btnImport) btnImport.style.display = "inline-block";
+  } else {
+    if (btnExport) btnExport.style.display = "none";
+    if (btnImport) btnImport.style.display = "none";
+  }
+}
+
+/* ============================
+   初始化：强制重新登录
+   ============================ */
+window.onload = function () {
+  currentRole = null;
+  localStorage.removeItem("role");
+  localStorage.removeItem("username");
+
+  document.getElementById("loginBox").style.display = "flex";
+  document.getElementById("userBar").style.display = "none";
+};
+
+/* ============================
+   全局变量
+   ============================ */
+let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+let editIndex = null;
+let currentPage = 1;
+const pageSize = 16;
+
+/* ============================
+   工具函数：金额格式化
+   ============================ */
+function fmtMoney(n) {
+  const x = Number(n || 0);
+  return isNaN(x) ? "0" : x.toLocaleString("zh-CN");
+}
+
+/* ============================
+   工具函数：标签渲染
+   ============================ */
+function tag(val) {
+  if (!val) return "";
+
+  let cls = "";
+  if (["已签约", "已开票", "已回款", "已结算"].includes(val)) cls = "green";
+  else if (["未签约", "未开票", "未回款", "未结算"].includes(val)) cls = "red";
+  else if (["不签约", "不开票", "少回款", "无提成"].includes(val)) cls = "lightgreen";
+
+  return `<span class="tag ${cls}">${val}</span>`;
+}
+/* ============================
+   主渲染函数 render()
+   ============================ */
+function render() {
+  if (!currentRole) return;
+
+  const kw = document.getElementById("keyword").value.trim().toLowerCase();
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+
+  // 排序：按开始时间或创建时间倒序
+  let data = [...orders].sort((a, b) => {
+    const ta = new Date(a.startDate || a.createTime || 0);
+    const tb = new Date(b.startDate || b.createTime || 0);
+    return tb - ta;
+  });
+
+  // 搜索过滤
+  data = data.filter((o) => {
+    if (!kw) return true;
+    return JSON.stringify(o).toLowerCase().includes(kw);
+  });
+
+  const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const start = (currentPage - 1) * pageSize;
+  const pageData = data.slice(start, start + pageSize);
+
+  pageData.forEach((o) => {
+    const idx = orders.indexOf(o);
+    const tr = document.createElement("tr");
+
+    const amountDisplay =
+      currentRole === "staff" ? "-" : "¥" + fmtMoney(o.amount);
+
+    // 删除按钮（仅管理员）
+    const deleteBtn =
+      currentRole === "admin"
+        ? `<button class="danger" onclick="removeOrder(${idx});event.stopPropagation();">删除</button>`
+        : "";
+
+    // 完成按钮（仅管理员 + 未完成）
+    const completeBtn =
+  currentRole === "admin"
+    ? o.completed
+      ? `<button class="gray" style="background:#52c41a;" onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
+      : `<button onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
+    : "";
+
+    // 完成标签（绿色）
+    const completedTag = o.completed
+      ? `<span class="tag green">完成</span>`
+      : "";
+
+    tr.innerHTML = `
+      <td> ${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""} </td> <td>${o.unit || ""}</td> <td>${o.name || ""}</td>
+      <td>${o.customer || ""}</td>
+      <td>${o.manager || ""}</td>
+      <td>${amountDisplay}</td>
+      <td>${tag(o.contract || "")}</td>
+      <td>${tag(o.invoice || "")}</td>
+      <td>${tag(o.payment || "")}</td>
+      <td>${tag(o.commission || "")}</td>
+      <td>
+        <button onclick="edit(${idx});event.stopPropagation();" ${o.completed ? "disabled" : ""}>编辑</button>
+        ${completeBtn}
+        ${deleteBtn}
+      </td>
+    `;
+
+    // 点击整行 → 查看详情（完成按钮不会触发，因为有 stopPropagation）
+    tr.onclick = () => view(idx);
+
+    tbody.appendChild(tr);
+  });
+
+  renderStats(data);
+  renderPagination(totalPages);
+}
+/* ============================
+   统计卡片 renderStats()
+   ============================ */
+function renderStats(filteredData) {
+  const stats = document.getElementById("stats");
+
+  // 成员只显示订单数量
+  if (currentRole === "staff") {
+    stats.innerHTML = `
+      <div class="card"><span>订单数量</span><b>${orders.length}</b></div>
+    `;
+    return;
+  }
+
+  let total = 0, paid = 0;
+
+  orders.forEach((o) => {
+    const amt = Number(o.amount || 0);
+    if (!isNaN(amt)) {
+      total += amt;
+      if (o.payment === "已回款") paid += amt;
+    }
+  });
+
+  let filteredAmount = 0;
+  (filteredData || []).forEach((o) => {
+    const amt = Number(o.amount || 0);
+    if (!isNaN(amt)) filteredAmount += amt;
+  });
+
+  stats.innerHTML = `
+    <div class="card"><span>订单数量</span><b>${orders.length}</b></div>
+    <div class="card"><span>签约总额</span><b>¥${fmtMoney(total)}</b></div>
+    <div class="card"><span>已回款总额</span><b>¥${fmtMoney(paid)}</b></div>
+    <div class="card"><span>未回款总额</span><b>¥${fmtMoney(total - paid)}</b></div>
+    <div class="card"><span>筛选订单金额</span><b>¥${fmtMoney(filteredAmount)}</b></div>
+  `;
+}
+
+/* ============================
+   分页 renderPagination()
+   ============================ */
+function renderPagination(totalPages) {
+  const container = document.getElementById("pagination");
+  container.innerHTML = "";
+  if (totalPages <= 1) return;
+
+  // 首页
+  const first = document.createElement("button");
+  first.textContent = "首页";
+  first.disabled = currentPage === 1;
+  first.onclick = () => {
+    currentPage = 1;
+    render();
+  };
+  container.appendChild(first);
+
+  // 上一页
+  const prev = document.createElement("button");
+  prev.textContent = "上一页";
+  prev.disabled = currentPage === 1;
+  prev.onclick = () => {
+    if (currentPage > 1) {
+      currentPage--;
+      render();
+    }
+  };
+  container.appendChild(prev);
+
+  // 中间页码
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.className = "gray";
+    btn.onclick = () => {
+      currentPage = i;
+      render();
+    };
+    container.appendChild(btn);
+  }
+
+  // 下一页
+  const next = document.createElement("button");
+  next.textContent = "下一页";
+  next.disabled = currentPage === totalPages;
+  next.onclick = () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      render();
+    }
+  };
+  container.appendChild(next);
+
+  // 尾页
+  const last = document.createElement("button");
+  last.textContent = "尾页";
+  last.disabled = currentPage === totalPages;
+  last.onclick = () => {
+    currentPage = totalPages;
+    render();
+  };
+  container.appendChild(last);
+
+  // 输入跳转
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = 1;
+  input.max = totalPages;
+  input.placeholder = "页码";
+  input.style.width = "60px";
+  input.style.padding = "4px 6px";
+  input.style.border = "1px solid #ccc";
+  input.style.borderRadius = "6px";
+
+  const go = document.createElement("button");
+  go.textContent = "GO";
+  go.onclick = () => {
+    let page = Number(input.value);
+    if (!page || page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentPage = page;
+    render();
+  };
+
+  container.appendChild(input);
+  container.appendChild(go);
+}
+
+/* ============================
+   新增订单 openAdd()
+   ============================ */
+function openAdd() {
+  editIndex = null;
+
+  document.querySelectorAll("#editModal input, #editModal select, #editModal textarea")
+    .forEach((i) => (i.value = ""));
+
+  document.getElementById("m_contract").value = "未签约";
+  document.getElementById("m_invoice").value = "未开票";
+  document.getElementById("m_payment").value = "未回款";
+  document.getElementById("m_commission").value = "未结算";
+
+  document.getElementById("modalTitle").innerText = "新增订单";
+  document.getElementById("editModal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("editModal").style.display = "none";
+}
+
+/* ============================
+   查看订单 view()
+   ============================ */
+function view(i) {
+  const o = orders[i];
+  if (!o) return;
+
+  document.getElementById("v_startDate").innerText = o.startDate || "";
+  document.getElementById("v_unit").innerText = o.unit || "";
+  document.getElementById("v_name").innerText = o.name || "";
+  document.getElementById("v_amount").innerText =
+    currentRole === "staff" ? "-" : "¥" + fmtMoney(o.amount);
+  document.getElementById("v_customer").innerText = o.customer || "";
+  document.getElementById("v_phone").innerText = o.phone || "";
+  document.getElementById("v_manager").innerText = o.manager || "";
+  document.getElementById("v_consultant").innerText = o.consultant || "";
+  document.getElementById("v_director").innerText = o.director || "";
+  document.getElementById("v_contract").innerText = o.contract || "";
+  document.getElementById("v_invoice").innerText = o.invoice || "";
+  document.getElementById("v_payment").innerText = o.payment || "";
+  document.getElementById("v_commission").innerText = o.commission || "";
+  document.getElementById("v_remark").innerText = o.remark || "";
+
+  document.getElementById("viewModal").style.display = "flex";
+}
+
+function closeView() {
+  document.getElementById("viewModal").style.display = "none";
+}
+/* ============================
+   编辑订单 edit()
+   ============================ */
+function edit(i) {
+
+  // 非管理员禁止编辑已完成订单
+  if (orders[i].completed && currentRole !== "admin") {
+    alert("该订单已完成，无法编辑");
+    return;
+  }
+
+  editIndex = i;
+  const o = orders[i];
+  if (!o) return;
+
+  document.getElementById("m_name").value = o.name || "";
+  document.getElementById("m_startDate").value = o.startDate || "";
+  document.getElementById("m_unit").value = o.unit || "";
+  document.getElementById("m_customer").value = o.customer || "";
+  document.getElementById("m_phone").value = o.phone || "";
+  document.getElementById("m_manager").value = o.manager || "";
+  document.getElementById("m_amount").value = o.amount || "";
+  document.getElementById("m_remark").value = o.remark || "";
+  document.getElementById("m_consultant").value = o.consultant || "";
+  document.getElementById("m_director").value = o.director || "";
+
+  document.getElementById("m_contract").value = o.contract || "未签约";
+  document.getElementById("m_invoice").value = o.invoice || "未开票";
+  document.getElementById("m_payment").value = o.payment || "未回款";
+  document.getElementById("m_commission").value = o.commission || "未结算";
+
+  document.getElementById("modalTitle").innerText = "编辑订单";
+  document.getElementById("editModal").style.display = "flex";
+}
+
+/* ============================
+   删除订单 removeOrder()
+   ============================ */
+let deleteIndex = null;
+
+function removeOrder(i) {
+  if (currentRole !== "admin") {
+    alert("只有管理员可以删除订单");
+    return;
+  }
+
+  deleteIndex = i;
+  const o = orders[i];
+  if (!o) return;
+
+  document.getElementById("deleteText").innerText =
+    `确定删除订单：${o.name || ""} / ${o.customer || ""}？`;
+
+  document.getElementById("deleteModal").style.display = "flex";
+}
+
+/* ============================
+   完成 / 取消完成：toggleComplete
+   ============================ */
+let completeIndex = null;
+
+function toggleComplete(i) {
+  if (currentRole !== "admin") {
+    alert("只有管理员可以操作完成状态");
+    return;
+  }
+
+  completeIndex = i;
+  const o = orders[i];
+
+  const msg = o.completed
+    ? `确定取消订单【${o.name || ""}】的完成状态？`
+    : `确定将订单【${o.name || ""}】标记为已完成？`;
+
+  document.getElementById("completeText").innerText = msg;
+  document.getElementById("completeModal").style.display = "flex";
+}
+
+function confirmComplete() {
+  if (completeIndex === null) return;
+
+  // 切换完成状态：true→false 或 false→true
+  orders[completeIndex].completed = !orders[completeIndex].completed;
+
+  // 保存到本地存储
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  // 重置索引
+  completeIndex = null;
+
+  // 关闭弹窗并刷新表格
+  closeComplete();
+  render();
+}
+
+function closeComplete() {
+  document.getElementById("completeModal").style.display = "none";
+}
+	
+function confirmDelete() {
+  if (deleteIndex === null) return;
+
+  orders.splice(deleteIndex, 1);
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  deleteIndex = null;
+  closeDelete();
+  render();
+}
+
+function closeDelete() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+// 删除弹窗：按 Enter 自动确认删除
+document.addEventListener("keydown", function (e) {
+  const del = document.getElementById("deleteModal");
+  if (del.style.display === "flex" && e.key === "Enter") {
+    confirmDelete();
+  }
+});
+	
+/* ============================
+   提成计算 calculate()
+   ============================ */
+function calculate(o) {
+  const rate = 0.1;
+  const amt = Number(o.amount || 0);
+
+  o.commissionAmount =
+    o.payment === "已回款" && !isNaN(amt)
+      ? (amt * rate).toFixed(2)
+      : "0";
+}
+
+/* ============================
+   保存订单 saveOrder()
+   ============================ */
+function saveOrder() {
+  const o = {
+    name: document.getElementById("m_name").value,
+    startDate: document.getElementById("m_startDate").value,
+    unit: document.getElementById("m_unit").value,
+    customer: document.getElementById("m_customer").value,
+    phone: document.getElementById("m_phone").value,
+    manager: document.getElementById("m_manager").value,
+    amount: document.getElementById("m_amount").value,
+    remark: document.getElementById("m_remark").value,
+    consultant: document.getElementById("m_consultant").value,
+    director: document.getElementById("m_director").value,
+    contract: document.getElementById("m_contract").value,
+    invoice: document.getElementById("m_invoice").value,
+    payment: document.getElementById("m_payment").value,
+    commission: document.getElementById("m_commission").value,
+
+    // ⭐ 保留完成状态（编辑时不重置）
+    completed: editIndex !== null ? orders[editIndex].completed : false,
+
+    createTime: new Date().toISOString()
+  };
+
+  calculate(o);
+
+  if (editIndex === null) {
+    orders.push(o);
+  } else {
+    orders[editIndex] = o;
+  }
+
+  localStorage.setItem("orders", JSON.stringify(orders));
+  closeModal();
+  render();
+}
+
+/* ============================
+   完成订单 completeOrder()
+   ============================ */
+function completeOrder(i) {
+  if (currentRole !== "admin") {
+    alert("只有管理员可以完成订单");
+    return;
+  }
+
+  // 弹出确认提示
+  if (!confirm("确认将该订单标记为已完成？完成后将无法再编辑。")) {
+    return;
+  }
+
+  // 锁定订单
+  orders[i].completed = true;
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  render();
+}
+/* ============================
+   导出 Excel（仅管理员）
+   ============================ */
+function exportOrdersExcel() {
+  if (currentRole !== "admin") {
+    alert("只有管理员可以导出数据");
+    return;
+  }
+
+  if (!orders || !orders.length) {
+    alert("暂无数据可导出");
+    return;
+  }
+
+  const headers = [
+    "项目名称",
+    "开始时间",
+    "项目单位",
+    "客户名",
+    "联系电话",
+    "客户经理",
+    "签约金额",
+    "合同",
+    "发票",
+    "回款",
+    "提成",
+    "课程顾问",
+    "课程编导",
+    "备注",
+    "创建时间",
+    "是否完成"
+  ];
+
+  const rows = orders.map((o) => [
+    o.name || "",
+    o.startDate || "",
+    o.unit || "",
+    o.customer || "",
+    o.phone || "",
+    o.manager || "",
+    o.amount || "",
+    o.contract || "",
+    o.invoice || "",
+    o.payment || "",
+    o.commission || "",
+    o.consultant || "",
+    o.director || "",
+    o.remark || "",
+    o.createTime || "",
+    o.completed ? "已完成" : "未完成"
+  ]);
+
+  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "订单数据");
+
+  const ts = new Date().toISOString().slice(0, 19).replace("T", "-");
+  XLSX.writeFile(workbook, `订单导出-${ts}.xlsx`);
+}
+
+/* ============================
+   导入 Excel（仅管理员）
+   ============================ */
+function importOrdersExcel(event) {
+  if (currentRole !== "admin") {
+    alert("只有管理员可以导入数据");
+    return;
+  }
+
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+
+    // ⭐ 覆盖原有数据
+    orders = [];
+
+    rows.forEach((r) => {
+      orders.push({
+        name: r["项目名称"] || "",
+        startDate: r["开始时间"] || "",
+        unit: r["项目单位"] || "",
+        customer: r["客户名"] || "",
+        phone: r["联系电话"] || "",
+        manager: r["客户经理"] || "",
+        amount: r["签约金额"] || "",
+        contract: r["合同"] || "",
+        invoice: r["发票"] || "",
+        payment: r["回款"] || "",
+        commission: r["提成"] || "",
+        consultant: r["课程顾问"] || "",
+        director: r["课程编导"] || "",
+        remark: r["备注"] || "",
+        createTime: r["创建时间"] || new Date().toISOString(),
+        completed: r["是否完成"] === "已完成"
+      });
+    });
+
+    localStorage.setItem("orders", JSON.stringify(orders));
+    render();
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+/* ============================
+   每日自动备份功能
+   ============================ */
+function dailyBackup() {
+  const today = new Date().toISOString().slice(0, 10); // 2025-12-23
+  const lastBackup = localStorage.getItem("lastBackupDate");
+
+  if (lastBackup === today) return; // 今天已经备份过
+
+  // 执行备份
+  localStorage.setItem("backup_" + today, JSON.stringify(orders));
+  localStorage.setItem("lastBackupDate", today);
+
+  console.log("已自动备份：backup_" + today);
+}
+
+// 页面加载时执行每日备份
+window.addEventListener("load", dailyBackup);
+	
+/* ============================
+   深色模式切换
+   ============================ */
+function toggleTheme() {
+  document.body.classList.toggle("dark-mode");
+}
+/* ============================
+   文件结束：关闭 script
+   ============================ */
+</script>
+
+</body>
+</html>
