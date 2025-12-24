@@ -1779,6 +1779,42 @@ function closeBackupManager() {
   }
 }
 	
+	/* ============================
+   退出登录 logout()
+   ============================ */
+function logout() {
+  // 清除登录状态
+  currentRole = null;
+  orders = [];
+  editIndex = null;
+  deleteIndex = null;
+  completeIndex = null;
+  currentPage = 1;
+
+  // 清除本地存储的登录信息
+  localStorage.removeItem("role");
+  localStorage.removeItem("username");
+  localStorage.removeItem("token");
+
+  // 隐藏用户栏，显示登录框
+  document.getElementById("userBar").style.display = "none";
+  document.getElementById("loginBox").style.display = "flex";
+
+  // 清空表格
+  const tbody = document.querySelector("#dataTable tbody");
+  if (tbody) tbody.innerHTML = "";
+
+  // 清空统计
+  const stats = document.getElementById("stats");
+  if (stats) stats.innerHTML = "";
+
+  // 清空搜索框
+  const kw = document.getElementById("keyword");
+  if (kw) kw.value = "";
+
+  console.log("已退出登录");
+}
+
 /* ============================
    深色模式切换
    ============================ */
