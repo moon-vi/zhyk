@@ -910,9 +910,75 @@
 
 <script>
 /* ============================
+   全局变量
+   ============================ */
+let currentRole = null;
+let orders = [];
+let editIndex = null;
+let deleteIndex = null;
+let completeIndex = null;
+let currentPage = 1;
+const pageSize = 16;
+
+/* ============================
+   云端订单读写：Cloudflare KV
+   ============================ */
+// 从云端加载订单
+async function loadOrdersFromCloud() {
+  try {
+    const res = await fetch("https://login-api.moon-2f1.workers.dev/getOrders");
+    const data = await res.json();
+    orders = Array.isArray(data) ? data : [];
+    render();
+  } catch (err) {
+    console.error("加载云端订单失败：", err);
+    orders = [];
+    render();
+  }
+}
+
+// 保存订单到云端
+async function saveOrdersToCloud() {
+  try {
+    await fetch("https://login-api.moon-2f1.workers.dev/saveOrders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orders)
+    });
+  } catch (err) {
+    console.error("保存订单到云端失败：", err);
+  }
+}
+
+// 每日备份到云端
+async function backupOrdersToCloud() {
+  try {
+    const today = new Date().toISOString().slice(0, 10); // 2025-12-24
+    await fetch("https://login-api.moon-2f1.workers.dev/backupOrders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date: today, orders })
+    });
+    console.log("已触发云端备份：", today);
+  } catch (err) {
+    console.error("云端备份失败：", err);
+  }
+}
+
+// 每日自动备份（只控制是否当天已备份）
+async function dailyBackup() {
+  const today = new Date().toISOString().slice(0, 10);
+  const lastBackup = localStorage.getItem("lastBackupDate");
+  if (lastBackup === today) return; // 今天已经备份过
+
+  await backupOrdersToCloud();
+  localStorage.setItem("lastBackupDate", today);
+}
+
+/* ============================
    登录系统（管理员/成员/财务）
    ============================ */
-// 登录函数：改为调用 Cloudflare Worker 后端
+// 登录函数：调用 Cloudflare Worker 后端
 async function login() {
   const u = document.getElementById("loginUser").value.trim();
   const p = document.getElementById("loginPass").value.trim();
@@ -923,7 +989,7 @@ async function login() {
   }
 
   try {
-    const res = await fetch("https://login-api.moon-2f1.workers.dev", {
+    const res = await fetch("https://login-api.moon-2f1.workers.dev/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: u, password: p })
@@ -936,23 +1002,24 @@ async function login() {
       return;
     }
 
-    // === 从这里开始是原来本地校验成功后的逻辑，保留并稍微调整 ===
     currentRole = data.role;
 
     localStorage.setItem("role", data.role);
-    localStorage.setItem("token", data.token);   // 新增：保存后端返回的 token
+    localStorage.setItem("token", data.token);
     localStorage.setItem("username", u);
 
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("userBar").style.display = "flex";
 
-    // 你原来 userName 显示为空，这里可选：显示账号或不显示
+    // 不显示账号，只显示身份
     document.getElementById("userName").innerText = "";
     document.getElementById("userRole").innerText = data.display || "";
     document.getElementById("userAvatar").style.display = "none";
 
     applyRolePermissions();
-    render();
+    // 登录后：先加载订单，再做每日云端备份
+    await loadOrdersFromCloud();
+    await dailyBackup();
   } catch (err) {
     console.error("登录请求失败：", err);
     alert("登录服务异常，请稍后重试");
@@ -1005,14 +1072,6 @@ window.onload = function () {
 };
 
 /* ============================
-   全局变量
-   ============================ */
-let orders = JSON.parse(localStorage.getItem("orders") || "[]");
-let editIndex = null;
-let currentPage = 1;
-const pageSize = 16;
-
-/* ============================
    工具函数：金额格式化
    ============================ */
 function fmtMoney(n) {
@@ -1033,6 +1092,7 @@ function tag(val) {
 
   return `<span class="tag ${cls}">${val}</span>`;
 }
+
 /* ============================
    主渲染函数 render()
    ============================ */
@@ -1075,21 +1135,18 @@ function render() {
         ? `<button class="danger" onclick="removeOrder(${idx});event.stopPropagation();">删除</button>`
         : "";
 
-    // 完成按钮（仅管理员 + 未完成）
+    // 完成按钮（仅管理员）
     const completeBtn =
-  currentRole === "admin"
-    ? o.completed
-      ? `<button class="gray" style="background:#52c41a;" onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
-      : `<button onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
-    : "";
-
-    // 完成标签（绿色）
-    const completedTag = o.completed
-      ? `<span class="tag green">完成</span>`
-      : "";
+      currentRole === "admin"
+        ? o.completed
+          ? `<button class="gray" style="background:#52c41a;" onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
+          : `<button onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
+        : "";
 
     tr.innerHTML = `
-      <td> ${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""} </td> <td>${o.unit || ""}</td> <td>${o.name || ""}</td>
+      <td>${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""}</td>
+      <td>${o.unit || ""}</td>
+      <td>${o.name || ""}</td>
       <td>${o.customer || ""}</td>
       <td>${o.manager || ""}</td>
       <td>${amountDisplay}</td>
@@ -1104,7 +1161,7 @@ function render() {
       </td>
     `;
 
-    // 点击整行 → 查看详情（完成按钮不会触发，因为有 stopPropagation）
+    // 点击整行 → 查看详情
     tr.onclick = () => view(idx);
 
     tbody.appendChild(tr);
@@ -1113,6 +1170,7 @@ function render() {
   renderStats(data);
   renderPagination(totalPages);
 }
+
 /* ============================
    统计卡片 renderStats()
    ============================ */
@@ -1127,7 +1185,8 @@ function renderStats(filteredData) {
     return;
   }
 
-  let total = 0, paid = 0;
+  let total = 0,
+    paid = 0;
 
   orders.forEach((o) => {
     const amt = Number(o.amount || 0);
@@ -1240,14 +1299,14 @@ function renderPagination(totalPages) {
   container.appendChild(input);
   container.appendChild(go);
 }
-
 /* ============================
    新增订单 openAdd()
    ============================ */
 function openAdd() {
   editIndex = null;
 
-  document.querySelectorAll("#editModal input, #editModal select, #editModal textarea")
+  document
+    .querySelectorAll("#editModal input, #editModal select, #editModal textarea")
     .forEach((i) => (i.value = ""));
 
   document.getElementById("m_contract").value = "未签约";
@@ -1292,11 +1351,11 @@ function view(i) {
 function closeView() {
   document.getElementById("viewModal").style.display = "none";
 }
+
 /* ============================
    编辑订单 edit()
    ============================ */
 function edit(i) {
-
   // 非管理员禁止编辑已完成订单
   if (orders[i].completed && currentRole !== "admin") {
     alert("该订单已完成，无法编辑");
@@ -1330,8 +1389,6 @@ function edit(i) {
 /* ============================
    删除订单 removeOrder()
    ============================ */
-let deleteIndex = null;
-
 function removeOrder(i) {
   if (currentRole !== "admin") {
     alert("只有管理员可以删除订单");
@@ -1348,11 +1405,32 @@ function removeOrder(i) {
   document.getElementById("deleteModal").style.display = "flex";
 }
 
+function closeDelete() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+async function confirmDelete() {
+  if (deleteIndex === null) return;
+
+  orders.splice(deleteIndex, 1);
+  await saveOrdersToCloud();
+
+  deleteIndex = null;
+  closeDelete();
+  render();
+}
+
+// 删除弹窗：按 Enter 自动确认删除
+document.addEventListener("keydown", function (e) {
+  const del = document.getElementById("deleteModal");
+  if (del && del.style.display === "flex" && e.key === "Enter") {
+    confirmDelete();
+  }
+});
+
 /* ============================
    完成 / 取消完成：toggleComplete
    ============================ */
-let completeIndex = null;
-
 function toggleComplete(i) {
   if (currentRole !== "admin") {
     alert("只有管理员可以操作完成状态");
@@ -1370,50 +1448,23 @@ function toggleComplete(i) {
   document.getElementById("completeModal").style.display = "flex";
 }
 
-function confirmComplete() {
+function closeComplete() {
+  document.getElementById("completeModal").style.display = "none";
+}
+
+async function confirmComplete() {
   if (completeIndex === null) return;
 
   // 切换完成状态：true→false 或 false→true
   orders[completeIndex].completed = !orders[completeIndex].completed;
 
-  // 保存到本地存储
-  localStorage.setItem("orders", JSON.stringify(orders));
+  await saveOrdersToCloud();
 
-  // 重置索引
   completeIndex = null;
-
-  // 关闭弹窗并刷新表格
   closeComplete();
   render();
 }
 
-function closeComplete() {
-  document.getElementById("completeModal").style.display = "none";
-}
-	
-function confirmDelete() {
-  if (deleteIndex === null) return;
-
-  orders.splice(deleteIndex, 1);
-  localStorage.setItem("orders", JSON.stringify(orders));
-
-  deleteIndex = null;
-  closeDelete();
-  render();
-}
-
-function closeDelete() {
-  document.getElementById("deleteModal").style.display = "none";
-}
-
-// 删除弹窗：按 Enter 自动确认删除
-document.addEventListener("keydown", function (e) {
-  const del = document.getElementById("deleteModal");
-  if (del.style.display === "flex" && e.key === "Enter") {
-    confirmDelete();
-  }
-});
-	
 /* ============================
    提成计算 calculate()
    ============================ */
@@ -1430,7 +1481,7 @@ function calculate(o) {
 /* ============================
    保存订单 saveOrder()
    ============================ */
-function saveOrder() {
+async function saveOrder() {
   const o = {
     name: document.getElementById("m_name").value,
     startDate: document.getElementById("m_startDate").value,
@@ -1446,10 +1497,8 @@ function saveOrder() {
     invoice: document.getElementById("m_invoice").value,
     payment: document.getElementById("m_payment").value,
     commission: document.getElementById("m_commission").value,
-
-    // ⭐ 保留完成状态（编辑时不重置）
+    // 保留完成状态（编辑时不重置）
     completed: editIndex !== null ? orders[editIndex].completed : false,
-
     createTime: new Date().toISOString()
   };
 
@@ -1461,15 +1510,15 @@ function saveOrder() {
     orders[editIndex] = o;
   }
 
-  localStorage.setItem("orders", JSON.stringify(orders));
+  await saveOrdersToCloud();
   closeModal();
   render();
 }
 
 /* ============================
-   完成订单 completeOrder()
+   完成订单 completeOrder()（旧按钮用到时）
    ============================ */
-function completeOrder(i) {
+async function completeOrder(i) {
   if (currentRole !== "admin") {
     alert("只有管理员可以完成订单");
     return;
@@ -1482,7 +1531,7 @@ function completeOrder(i) {
 
   // 锁定订单
   orders[i].completed = true;
-  localStorage.setItem("orders", JSON.stringify(orders));
+  await saveOrdersToCloud();
 
   render();
 }
@@ -1559,13 +1608,13 @@ function importOrdersExcel(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function (e) {
+  reader.onload = async function (e) {
     const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: "array" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet);
 
-    // ⭐ 覆盖原有数据
+    // 覆盖原有数据
     orders = [];
 
     rows.forEach((r) => {
@@ -1589,32 +1638,13 @@ function importOrdersExcel(event) {
       });
     });
 
-    localStorage.setItem("orders", JSON.stringify(orders));
+    await saveOrdersToCloud();
     render();
   };
 
   reader.readAsArrayBuffer(file);
 }
 
-/* ============================
-   每日自动备份功能
-   ============================ */
-function dailyBackup() {
-  const today = new Date().toISOString().slice(0, 10); // 2025-12-23
-  const lastBackup = localStorage.getItem("lastBackupDate");
-
-  if (lastBackup === today) return; // 今天已经备份过
-
-  // 执行备份
-  localStorage.setItem("backup_" + today, JSON.stringify(orders));
-  localStorage.setItem("lastBackupDate", today);
-
-  console.log("已自动备份：backup_" + today);
-}
-
-// 页面加载时执行每日备份
-window.addEventListener("load", dailyBackup);
-	
 /* ============================
    深色模式切换
    ============================ */
@@ -1625,6 +1655,7 @@ function toggleTheme() {
    文件结束：关闭 script
    ============================ */
 </script>
+
 
 </body>
 </html>
