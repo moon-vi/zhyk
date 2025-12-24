@@ -649,6 +649,8 @@
         >
           导入 Excel
         </button>
+		  <button id="btnBackupManager" onclick="openBackupManager()" style="display:none;">备份管理</button>
+
         <input
           type="text"
           id="keyword"
@@ -883,6 +885,20 @@
       </div>
     </div>
   </div>
+	
+	<!-- 备份弹窗 -->
+	<div id="backupModal" class="modal" style="display:none;">
+  <div class="modal-content" style="width:600px;">
+    <h2>备份管理</h2>
+
+    <div id="backupList">加载中...</div>
+
+    <div style="margin-top:20px; text-align:right;">
+      <button onclick="cleanupBackups()">清理30天前备份</button>
+      <button onclick="closeBackupManager()">关闭</button>
+    </div>
+  </div>
+</div>
 
   <!-- 删除弹窗 -->
   <div class="modal" id="deleteModal">
@@ -1057,6 +1073,14 @@ function applyRolePermissions() {
     if (btnExport) btnExport.style.display = "none";
     if (btnImport) btnImport.style.display = "none";
   }
+	// 备份权限
+	const btnBackupManager = document.getElementById("btnBackupManager");
+
+if (currentRole === "admin") {
+    if (btnBackupManager) btnBackupManager.style.display = "inline-block";
+} else {
+    if (btnBackupManager) btnBackupManager.style.display = "none";
+}
 }
 
 /* ============================
@@ -1645,6 +1669,114 @@ function importOrdersExcel(event) {
   reader.readAsArrayBuffer(file);
 }
 
+	 // 备份管理逻辑
+	function openBackupManager() {
+  document.getElementById("backupModal").style.display = "flex";
+  loadBackupList();
+}
+
+function closeBackupManager() {
+  document.getElementById("backupModal").style.display = "none";
+}
+
+	async function loadBackupList() {
+  const box = document.getElementById("backupList");
+  box.innerHTML = "加载中...";
+
+  try {
+    const res = await fetch("https://login-api.moon-2f1.workers.dev/listBackups");
+    const list = await res.json();
+
+    if (!list.length) {
+      box.innerHTML = "<p>暂无备份</p>";
+      return;
+    }
+
+    let html = "<table class='backup-table'><tr><th>备份日期</th><th>操作</th></tr>";
+
+    list.forEach(item => {
+      const key = item.name; // backup_2025-12-24
+      const date = key.replace("backup_", "");
+
+      html += `
+        <tr>
+          <td>${date}</td>
+          <td>
+            <button onclick="restoreBackup('${key}')">恢复</button>
+            <button onclick="deleteBackup('${key}')">删除</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += "</table>";
+    box.innerHTML = html;
+
+  } catch (err) {
+    box.innerHTML = "加载失败";
+    console.error(err);
+  }
+}
+
+	async function restoreBackup(key) {
+  if (!confirm(`确定恢复备份：${key.replace("backup_", "")}？当前订单将被覆盖！`)) return;
+
+  try {
+    const res = await fetch("https://login-api.moon-2f1.workers.dev/restoreBackup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key })
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      alert("恢复失败：" + data.message);
+      return;
+    }
+
+    alert("恢复成功！");
+    await loadOrdersFromCloud();
+    render();
+
+  } catch (err) {
+    alert("恢复失败");
+    console.error(err);
+  }
+}
+
+	async function deleteBackup(key) {
+  if (!confirm(`确定删除备份：${key.replace("backup_", "")}？`)) return;
+
+  try {
+    await fetch("https://login-api.moon-2f1.workers.dev/saveOrders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deleteBackup: key })
+    });
+
+    // 实际删除在 Worker 的 cleanup 或 deleteBackup 中处理
+    alert("删除成功");
+    loadBackupList();
+
+  } catch (err) {
+    alert("删除失败");
+    console.error(err);
+  }
+}
+
+	async function cleanupBackups() {
+  if (!confirm("确定清理30天前的备份？此操作不可恢复！")) return;
+
+  try {
+    await fetch("https://login-api.moon-2f1.workers.dev/cleanupBackups");
+    alert("清理完成");
+    loadBackupList();
+  } catch (err) {
+    alert("清理失败");
+    console.error(err);
+  }
+}
+	
 /* ============================
    深色模式切换
    ============================ */
