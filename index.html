@@ -632,8 +632,11 @@
       <div class="stats" id="stats"></div>
       <div class="toolbar">
         <button onclick="openAdd()" id="btnAdd">新增订单</button>
+		  
+		  <button id="btnBackupManager" onclick="openBackupManager()" style="display:none;">备份管理</button>
+		  
         <button class="gray" onclick="exportOrdersExcel()" id="btnExport">
-          导出 Excel
+          导出数据
         </button>
         <input
           type="file"
@@ -647,9 +650,8 @@
           class="gray"
           onclick="document.getElementById('importExcel').click()"
         >
-          导入 Excel
+          导入数据
         </button>
-		  <button id="btnBackupManager" onclick="openBackupManager()" style="display:none;">备份管理</button>
 
         <input
           type="text"
