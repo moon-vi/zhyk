@@ -350,17 +350,15 @@
     .row-4-last {
       grid-column: span 2;
     }
-
-	 /* 固定操作列宽度，永远在最右侧 */
-.col-action {
-    width: 150px;
-    min-width: 150px;
-    max-width: 150px;
-    white-space: nowrap;
-    text-align: left;
+	  
+/* 固定开始时间列在最左侧 */
+.col-start {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: var(--card);
 }
- 
-	/* 项目单位：限制 20 字符宽度 */
+/* 项目单位：限制 20 字符宽度 */
 .col-unit {
     max-width: 160px; /* 20 字符 ≈ 160px */
     overflow: hidden;
@@ -374,6 +372,66 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+/* 客户名：限制 10 字符宽度 */
+.col-customer {
+    max-width: 80px; /* 10 字符 ≈ 80px */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 客户经理：限制 10 字符宽度 */
+.col-manager {
+    max-width: 80px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 签约金额：限制 10 字符宽度 */
+.col-amount {
+    max-width: 80px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 固定右侧列（合同、发票、回款、提成、操作） */
+.col-fixed {
+    position: sticky;
+    right: 0;
+    background: var(--card);
+    z-index: 2;
+    white-space: nowrap;
+}
+
+/* 操作列宽度固定 */
+.col-action {
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+}
+/* 操作列最右 */
+.col-action {
+    right: 0;
+}
+
+/* 提成列 */
+.col-fixed:nth-last-child(2) {
+    right: 180px;
+}
+
+/* 回款列 */
+.col-fixed:nth-last-child(3) {
+    right: 180px + 120px;
+}
+
+/* 发票列 */
+.col-fixed:nth-last-child(4) {
+    right: 180px + 120px * 2;
+}
+
+/* 合同列 */
+.col-fixed:nth-last-child(5) {
+    right: 180px + 120px * 3;
+} 
  
     textarea {
       width: 100%;
@@ -695,17 +753,18 @@
       <table id="dataTable">
         <thead>
           <tr>
-            <th>开始时间</th>
+            <th class="col-start">开始时间</th>
             <th class="col-unit">项目单位</th>
             <th class="col-name">项目名称</th>
-            <th>客户名</th>
-            <th>客户经理</th>
-            <th>签约金额</th>
-            <th>合同</th>
-            <th>发票</th>
-            <th>回款</th>
-            <th>提成</th>
-            <th class="col-action">操作</th>
+            <th class="col-customer">客户名</th>
+            <th class="col-manager">客户经理</th>
+            <th class="col-amount">签约金额</th>
+            <th class="col-fixed">合同</th>
+            <th class="col-fixed">发票</th>
+            <th class="col-fixed">回款</th>
+            <th class="col-fixed">提成</th>
+            <th class="col-action col-fixed">操作</th>
+
           </tr>
         </thead>
         <tbody></tbody>
@@ -1195,17 +1254,14 @@ function render() {
         : "";
 
     tr.innerHTML = `
-      <td>${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""}</td>
+      <td class="col-start">${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""}</td>
       <td class="col-unit">${o.unit || ""}</td>
       <td class="col-name">${o.name || ""}</td>
-      <td>${o.customer || ""}</td>
-      <td>${o.manager || ""}</td>
-      <td>${amountDisplay}</td>
-      <td>${tag(o.contract || "")}</td>
-      <td>${tag(o.invoice || "")}</td>
-      <td>${tag(o.payment || "")}</td>
-      <td>${tag(o.commission || "")}</td>
-      <td class="col-action">
+      <td class="col-customer">${o.customer || ""}</td>
+      <td class="col-manager">${o.manager || ""}</td>
+      <td class="col-amount">${amountDisplay}</td>
+      <td class="col-fixed">${tag(o.contract || "")}</td> <td class="col-fixed">${tag(o.invoice || "")}</td> <td class="col-fixed">${tag(o.payment || "")}</td> <td class="col-fixed">${tag(o.commission || "")}</td>
+      <td class="col-action col-fixed">
         <button onclick="edit(${idx});event.stopPropagation();" ${o.completed ? "disabled" : ""}>编辑</button>
         ${completeBtn}
         ${deleteBtn}
