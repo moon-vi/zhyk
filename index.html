@@ -5,253 +5,709 @@
   <title>项目管理系统</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-/* ===========================
-   全局变量（亮色 / 暗色模式）
-=========================== */
-:root {
-  --bg: #f5f7fa;
-  --text: #1f1f1f;
-  --card: #fff;
-  --line: #eee;
-  --thead-bg: #fafafa;
-  --thead-text: #1f1f1f;
-  --row-hover-bg: #f0f9ff;
-  --row-hover-text: #1f1f1f;
-}
+    :root {
+      --bg: #f5f7fa;
+      --text: #1f1f1f;
+      --card: #fff;
+      --line: #eee;
+      --thead-bg: #fafafa;
+      --thead-text: #1f1f1f;
+      --row-hover-bg: #f0f9ff;
+      --row-hover-text: #1f1f1f;
+    }
 
-body.dark-mode {
-  --bg: #1e1e1e;
-  --text: #f5f5f5;
-  --card: #2c2c2c;
-  --line: #444;
-  --thead-bg: #2d2d2d;
-  --thead-text: #f5f5f5;
-  --row-hover-bg: #2b3340;
-  --row-hover-text: #f5f5f5;
-}
+    body.dark-mode {
+      --bg: #1e1e1e;
+      --text: #f5f5f5;
+      --card: #2c2c2c;
+      --line: #444;
+      --thead-bg: #2d2d2d;
+      --thead-text: #f5f5f5;
+      --row-hover-bg: #2b3340;
+      --row-hover-text: #f5f5f5;
+    }
 
-/* ===========================
-   基础样式
-=========================== */
-body {
-  font-family: "Microsoft YaHei", Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  margin: 0;
-  padding: 0;
-}
+    body {
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
 
-button, input, select {
-  padding: 4px 8px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
+    /* 日期输入框基础样式 */
+    .date-input {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-button {
-  cursor: pointer;
-  background: #1677ff;
-  color: #fff;
-  border: none;
-  transition: all 0.2s ease;
-}
+    /* 深色模式自动适配 */
+    body.dark-mode .date-input {
+      background: var(--card);
+      color: var(--text);
+      border-color: var(--line);
+    }
 
-button:hover {
-  background: #409eff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,.15);
-}
+    /* 聚焦效果 */
+    .date-input:focus {
+      outline: 2px solid #1677ff;
+      outline-offset: 2px;
+    }
 
-button:active {
-  background: #1056c9;
-  transform: scale(.96);
-}
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: var(--card) !important;
+      color: var(--text) !important;
+      border-color: var(--line) !important;
+    }
 
-button.gray { background:#999; }
-button.gray:hover { background:#aaa; }
-button.gray:active { background:#777; }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin: 0 0 12px;
+    }
 
-button.danger { background:#ff4d4f; }
-button.danger:hover { background:#ff7875; }
-button.danger:active { background:#d9363e; }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      width: calc(100% - 40px);
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      align-items: center;
+    }
 
-/* ===========================
-   顶部栏
-=========================== */
-#topBar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: var(--bg);
-  z-index: 998;
-  box-shadow: 0 2px 6px rgba(0,0,0,.1);
-}
+    button,
+    input,
+    select {
+      padding: 4px 8px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
 
-.topBar-inner {
-  width: calc(100% - 40px);
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 10px 0;
-}
+    input,
+    select,
+    button {
+      border: 1px solid #ccc;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
 
-/* ===========================
-   主内容区
-=========================== */
-#mainContent {
-  position: fixed;
-  top: 180px;
-  bottom: 50px;
-  left: 0;
-  right: 0;
-  overflow: hidden;
-}
+    button {
+      cursor: pointer;
+      background: #1677ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
 
-.table-container {
-  width: calc(100% - 40px);
-  margin: 0 auto;
-  height: 100%;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--card);
-  overflow-x: auto;
-}
+    button:hover {
+      background: #409eff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--card);
-}
+    button:active {
+      background: #1056c9;
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+    }
 
-th, td {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
-  white-space: nowrap;
-  font-size: 14px;
-}
+    button:focus {
+      outline: 2px solid #ff9800;
+      outline-offset: 2px;
+    }
 
-th {
-  background: var(--thead-bg);
-  color: var(--thead-text);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
+    button.gray {
+      background: #999;
+    }
 
-/* ===========================
-   Sticky 列（左 + 右）
-=========================== */
+    button.gray:hover {
+      background: #aaa;
+    }
 
-/* 左侧固定列 */
+    button.gray:active {
+      background: #777;
+    }
+
+    button.danger {
+      background: #ff4d4f;
+    }
+
+    button.danger:hover {
+      background: #ff7875;
+    }
+
+    button.danger:active {
+      background: #d9363e;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 1600px;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 8px 10px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+      text-align: center;
+      font-size: 13px;
+      min-width: 160px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+    }
+
+    .card b {
+      font-size: 16px;
+      margin-top: 6px;
+      color: #1677ff;
+      display: block;
+    }
+
+    #mainContent {
+      position: fixed;
+      top: 180px;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    .table-container {
+      width: calc(100% - 40px);
+      margin: 0 auto;
+      height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #topBar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--bg);
+      z-index: 998;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
+    }
+
+    .topBar-inner {
+      width: calc(100% - 40px);
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 10px 0;
+      box-sizing: border-box;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      text-align: left;
+      color: var(--thead-text);
+      background: var(--thead-bg);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: inline-block;
+    }
+
+    .tag.green {
+      background: #d1f7e2;
+      color: #0f8a3b;
+      border: 1px solid #0f8a3b;
+      font-weight: bold;
+    }
+
+    .tag.red {
+      background: #ffe1e1;
+      color: #d60000;
+      border: 1px solid #d60000;
+      font-weight: bold;
+    }
+
+    .tag.lightgreen {
+      background: #e8fcd9;
+      color: #4a8f00;
+      border: 1px solid #4a8f00;
+      font-weight: bold;
+    }
+
+    /* 弹窗基础样式 */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .25);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 30px 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+      animation: fadeIn .25s ease;
+      max-width: 900px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-content h3 {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* 新增 / 编辑表单 4 列网格 */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 20px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-row label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* 第 1、2、3 行:两个字段,各占 2 列 */
+    .row-1,
+    .row-2,
+    .row-3 {
+      grid-column: span 2;
+    }
+
+    /* 备注占满一行 */
+    .full-row {
+      grid-column: 1 / -1;
+    }
+
+    /* 第 4 行:客户经理 + 课程顾问 + 课程编导 */
+    .row-4 {
+      grid-column: span 1;
+    }
+
+    .row-4-last {
+      grid-column: span 2;
+    }
+	  
+/* 固定开始时间列在最左侧 */
 .col-start {
-  position: sticky;
-  left: 0;
-  z-index: 3;
-  background: var(--card);
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: var(--card);
+}
+/* 项目单位：限制 20 字符宽度 */
+.col-unit {
+    max-width: 160px; /* 20 字符 ≈ 160px */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+ /* 项目名称：限制 35 字符宽度 */
+.col-name {
+    max-width: 280px; /* 35 字符 ≈ 280px */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 客户名：限制 10 字符宽度 */
+.col-customer {
+    max-width: 80px; /* 10 字符 ≈ 80px */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 客户经理：限制 10 字符宽度 */
+.col-manager {
+    max-width: 80px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 签约金额：限制 10 字符宽度 */
+.col-amount {
+    max-width: 80px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 操作列：150px */
+.col-action {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    position: sticky;
+    right: 0;
+    background: var(--card);
+    z-index: 5;
+    white-space: nowrap;
 }
 
-/* 右侧固定列偏移量 */
-.col-action     { right: 0;     z-index: 5; }
-.col-commission { right: 150px; z-index: 4; }
-.col-payment    { right: 230px; z-index: 4; }
-.col-invoice    { right: 310px; z-index: 4; }
-.col-contract   { right: 390px; z-index: 4; }
-
-/* 列宽限制 */
-.col-unit      { max-width:160px; overflow:hidden; text-overflow:ellipsis; }
-.col-name      { max-width:280px; overflow:hidden; text-overflow:ellipsis; }
-.col-customer  { max-width:80px;  overflow:hidden; text-overflow:ellipsis; }
-.col-manager   { max-width:80px;  overflow:hidden; text-overflow:ellipsis; }
-.col-amount    { max-width:80px;  overflow:hidden; text-overflow:ellipsis; }
-.col-action    { width:150px; min-width:150px; max-width:150px; }
-
-/* ===========================
-   表格 Hover（整行 + sticky 修复）
-=========================== */
-#dataTable tbody tr {
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+/* 提成列：80px */
+.col-commission {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 150px; /* 紧挨操作列 */
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
 
-#dataTable tbody tr:hover {
-  transform: scale(1.01);
-  background: var(--row-hover-bg);
-  color: var(--row-hover-text);
-  position: relative;
-  z-index: 10; /* 让阴影不被 sticky 遮挡 */
+/* 回款列：80px */
+.col-payment {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 150px + 80px; /* 紧挨提成列 */
+    right: 230px;
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
 
-/* 关键修复：让 sticky 列也跟随变色 */
-#dataTable tbody tr:hover td {
-  background: var(--row-hover-bg) !important;
-  color: var(--row-hover-text) !important;
+/* 发票列：80px */
+.col-invoice {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 230px + 80px; /* 紧挨回款列 */
+    right: 310px;
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
 
-/* ===========================
-   分页栏
-=========================== */
-#pagination {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: var(--card);
-  padding: 10px 0;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 -2px 6px rgba(0,0,0,.1);
-  z-index: 999;
+/* 合同列：80px */
+.col-contract {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 310px + 80px; /* 紧挨发票列 */
+    right: 390px;
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
+ 
+    textarea {
+      width: 100%;
+      resize: vertical;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
 
-/* ===========================
-   弹窗
-=========================== */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.25);
-  backdrop-filter: blur(3px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
+    .actions {
+      margin-top: auto;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
 
-.modal-content {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 30px 32px;
-  box-shadow: 0 8px 30px rgba(0,0,0,.25);
-  animation: fadeIn .25s ease;
-  max-width: 900px;
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+    /* 查看窗口 4 列网格 */
+    .view-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 20px;
+    }
 
-/* ===========================
-   表单布局
-=========================== */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 16px 20px;
-}
+    .view-row {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
 
-.form-row { display:flex; flex-direction:column; }
-.row-1, .row-2, .row-3 { grid-column: span 2; }
-.row-4 { grid-column: span 1; }
-.row-4-last { grid-column: span 2; }
-.full-row { grid-column: 1 / -1; }
+    .view-row label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
 
-/* ===========================
-   动画
-=========================== */
-@keyframes fadeIn {
-  from { transform: translateY(-20px); opacity:0; }
-  to   { transform: translateY(0); opacity:1; }
-}
+    .view-row.full-row {
+      grid-column: 1 / -1;
+      border-bottom: none;
+    }
 
+    .remark-box {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      white-space: pre-wrap;
+      min-height: 60px;
+    }
+
+    #deleteModal .modal-content {
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #deleteModal h3 {
+      color: #cf1322;
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #deleteModal p {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    #deleteModal .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      border-top: none;
+      padding-top: 0;
+    }
+
+    #dataTable tbody tr {
+      transition: transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+    }
+
+    #dataTable tbody tr:hover {
+      transform: scale(1.01);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      background: var(--row-hover-bg);
+      color: var(--row-hover-text);
+    }
+
+    #pagination {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: var(--card);
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, .1);
+      z-index: 999;
+    }
+
+    #loginBox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .25);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .login-panel {
+      width: 320px;
+      background: var(--card);
+      color: var(--text);
+      padding: 26px 24px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .login-panel h3 {
+      text-align: center;
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .login-panel label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .login-panel input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .login-panel input:focus {
+      border-color: #1677ff;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, .2);
+    }
+
+    .login-panel button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #1677ff;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .login-panel button:hover {
+      background: #409eff;
+    }
+
+    #userBar {
+      position: fixed;
+      top: 12px;
+      right: 20px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      padding: 6px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+      border: 1px solid var(--line);
+      z-index: 999;
+      font-size: 13px;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      background: #1677ff;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .role-tag {
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #e6f4ff;
+      color: #1677ff;
+      border: 1px solid #91caff;
+    }
+
+    .logout-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      background: #ff4d4f;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: #ff7875;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+
+    @keyframes fadeIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
