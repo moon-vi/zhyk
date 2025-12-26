@@ -542,24 +542,34 @@
 
 /* 行基础过渡效果 */
 #dataTable tbody tr {
-  transition: box-shadow 0.2s ease,
+  transition: 
     background 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
-/* 行 hover 效果：不缩放，只浮起 + 变色 */
+/* 行 hover 效果：无放大、柔和阴影、淡描边、文字更清晰 */
 #dataTable tbody tr:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
   background: var(--row-hover-bg);
   color: var(--row-hover-text);
+
+  /* 轻微阴影（不造成视觉放大） */
+  box-shadow: 0 2px 6px rgba(0,0,0,.10);
+
+  /* 一圈非常淡的描边（质感关键） */
+  border-top: 1px solid rgba(0,0,0,.08);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+
   position: relative;
   z-index: 10;
 }
 
-/* 关键：让所有单元格（包含 sticky 列）在 hover 时都跟随变色 */
+/* 让 sticky 列也跟随 hover 效果（必须保留） */
 #dataTable tbody tr:hover td {
   background: var(--row-hover-bg) !important;
   color: var(--row-hover-text) !important;
+  border-color: rgba(0,0,0,.08) !important;
 }
 
     #pagination {
