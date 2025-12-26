@@ -393,45 +393,69 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-/* 固定右侧列（合同、发票、回款、提成、操作） */
-.col-fixed {
-    position: sticky;
-    right: 0;
-    background: var(--card);
-    z-index: 2;
-    white-space: nowrap;
-}
-
-/* 操作列宽度固定 */
+/* 操作列：150px */
 .col-action {
     width: 150px;
     min-width: 150px;
     max-width: 150px;
-}
-/* 操作列最右 */
-.col-action {
+    position: sticky;
     right: 0;
+    background: var(--card);
+    z-index: 5;
+    white-space: nowrap;
 }
 
-/* 提成列 */
-.col-fixed:nth-last-child(2) {
-    right: 80px;
+/* 提成列：80px */
+.col-commission {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 150px; /* 紧挨操作列 */
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
 
-/* 回款列 */
-.col-fixed:nth-last-child(3) {
-    right: 80px + 80px;
+/* 回款列：80px */
+.col-payment {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 150px + 80px; /* 紧挨提成列 */
+    right: 230px;
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
 
-/* 发票列 */
-.col-fixed:nth-last-child(4) {
-    right: 80px + 80px * 2;
+/* 发票列：80px */
+.col-invoice {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 230px + 80px; /* 紧挨回款列 */
+    right: 310px;
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
 }
 
-/* 合同列 */
-.col-fixed:nth-last-child(5) {
-    right: 80px + 80px * 3;
-} 
+/* 合同列：80px */
+.col-contract {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    position: sticky;
+    right: 310px + 80px; /* 紧挨发票列 */
+    right: 390px;
+    background: var(--card);
+    z-index: 4;
+    white-space: nowrap;
+}
+
  
     textarea {
       width: 100%;
@@ -759,11 +783,11 @@
             <th class="col-customer">客户名</th>
             <th class="col-manager">客户经理</th>
             <th class="col-amount">签约金额</th>
-            <th class="col-fixed">合同</th>
-            <th class="col-fixed">发票</th>
-            <th class="col-fixed">回款</th>
-            <th class="col-fixed">提成</th>
-            <th class="col-action col-fixed">操作</th>
+            <th class="col-contract">合同</th>
+            <th class="col-invoice">发票</th>
+            <th class="col-payment">回款</th>
+            <th class="col-commission">提成</th>
+            <th class="col-action">操作</th>
 
           </tr>
         </thead>
@@ -1260,8 +1284,11 @@ function render() {
       <td class="col-customer">${o.customer || ""}</td>
       <td class="col-manager">${o.manager || ""}</td>
       <td class="col-amount">${amountDisplay}</td>
-      <td class="col-fixed">${tag(o.contract || "")}</td> <td class="col-fixed">${tag(o.invoice || "")}</td> <td class="col-fixed">${tag(o.payment || "")}</td> <td class="col-fixed">${tag(o.commission || "")}</td>
-      <td class="col-action col-fixed">
+      <td class="col-contract">${tag(o.contract || "")}</td> 
+      <td class="col-invoice">${tag(o.invoice || "")}</td> 
+      <td class="col-payment">${tag(o.payment || "")}</td> 
+      <td class="col-commission">${tag(o.commission || "")}</td> 
+      <td class="col-action">
         <button onclick="edit(${idx});event.stopPropagation();" ${o.completed ? "disabled" : ""}>编辑</button>
         ${completeBtn}
         ${deleteBtn}
