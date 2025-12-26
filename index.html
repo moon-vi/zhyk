@@ -549,18 +549,15 @@
     border-color 0.2s ease;
 }
 
-/* 行 hover：伪放大效果 + 柔光边缘 + 轻浮起 */
+/* 行 hover：无放大、无断层、柔光 + 内描边 */
 #dataTable tbody tr:hover {
   background: var(--row-hover-bg);
   color: var(--row-hover-text);
 
-  /* 伪放大：用阴影 + 外描边模拟放大感 */
-  box-shadow: 
-      0 4px 12px rgba(0,0,0,.15),
-      0 0 0 2px rgba(22,119,255,.15); /* 外圈淡蓝光，模拟放大 */
-
-  border-top: 1px solid rgba(0,0,0,.08);
-  border-bottom: 1px solid rgba(0,0,0,.08);
+  /* 柔和阴影 + 内描边（不会断层） */
+  box-shadow:
+      0 2px 6px rgba(0,0,0,.10),
+      0 0 0 1px rgba(0,0,0,.08) inset;
 
   position: relative;
   z-index: 10;
@@ -570,7 +567,6 @@
 #dataTable tbody tr:hover td {
   background: var(--row-hover-bg) !important;
   color: var(--row-hover-text) !important;
-  border-color: rgba(0,0,0,.08) !important;
 }
 
     #pagination {
