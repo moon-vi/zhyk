@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>项目管理系统</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     :root {
       --bg: #f5f7fa;
@@ -35,7 +36,29 @@
       padding: 0;
     }
 
-    /* 日期输入框基础样式 */
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin: 0 0 12px;
+    }
+
+    /* 表单输入类通用样式 */
+    input,
+    select,
+    textarea {
+      padding: 4px 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      box-sizing: border-box;
+    }
+
+    input[type="date"] {
+      padding: 8px;
+    }
+
     .date-input {
       padding: 8px;
       border-radius: 6px;
@@ -47,14 +70,6 @@
       box-sizing: border-box;
     }
 
-    /* 深色模式自动适配 */
-    body.dark-mode .date-input {
-      background: var(--card);
-      color: var(--text);
-      border-color: var(--line);
-    }
-
-    /* 聚焦效果 */
     .date-input:focus {
       outline: 2px solid #1677ff;
       outline-offset: 2px;
@@ -68,41 +83,6 @@
       border-color: var(--line) !important;
     }
 
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      margin: 0 0 12px;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      width: calc(100% - 40px);
-      max-width: 1600px;
-      margin-left: auto;
-      margin-right: auto;
-      box-sizing: border-box;
-      align-items: center;
-    }
-
-    button,
-    input,
-    select {
-      padding: 4px 8px;
-      font-size: 13px;
-      border-radius: 6px;
-    }
-
-    input,
-    select,
-    button {
-      border: 1px solid #ccc;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
     button {
       cursor: pointer;
       background: #1677ff;
@@ -111,6 +91,7 @@
       border-radius: 6px;
       padding: 4px 8px;
       font-size: 13px;
+      box-sizing: border-box;
       transition: all 0.2s ease;
     }
 
@@ -153,6 +134,19 @@
 
     button.danger:active {
       background: #d9363e;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      width: calc(100% - 40px);
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      align-items: center;
     }
 
     .stats {
@@ -278,7 +272,7 @@
       font-weight: bold;
     }
 
-    /* 弹窗基础样式 */
+    /* 通用弹窗 */
     .modal {
       position: fixed;
       inset: 0;
@@ -312,7 +306,6 @@
       font-weight: bold;
     }
 
-    /* 新增 / 编辑表单 4 列网格 */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -330,19 +323,16 @@
       display: block;
     }
 
-    /* 第 1、2、3 行:两个字段,各占 2 列 */
     .row-1,
     .row-2,
     .row-3 {
       grid-column: span 2;
     }
 
-    /* 备注占满一行 */
     .full-row {
       grid-column: 1 / -1;
     }
 
-    /* 第 4 行:客户经理 + 课程顾问 + 课程编导 */
     .row-4 {
       grid-column: span 1;
     }
@@ -350,112 +340,92 @@
     .row-4-last {
       grid-column: span 2;
     }
-	  
-/* 固定开始时间列在最左侧 */
-.col-start {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    background: var(--card);
-}
-/* 项目单位：限制 20 字符宽度 */
-.col-unit {
-    max-width: 160px; /* 20 字符 ≈ 160px */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
- /* 项目名称：限制 35 字符宽度 */
-.col-name {
-    max-width: 280px; /* 35 字符 ≈ 280px */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-/* 客户名：限制 10 字符宽度 */
-.col-customer {
-    max-width: 80px; /* 10 字符 ≈ 80px */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-/* 客户经理：限制 10 字符宽度 */
-.col-manager {
-    max-width: 80px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-/* 签约金额：限制 10 字符宽度 */
-.col-amount {
-    max-width: 80px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-/* 操作列：150px */
-.col-action {
-    width: 150px;
-    min-width: 150px;
-    max-width: 150px;
-    position: sticky;
-    right: 0;
-    background: var(--card);
-    z-index: 5;
-    white-space: nowrap;
-}
 
-/* 提成列：80px */
-.col-commission {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
-    position: sticky;
-    right: 150px; /* 紧挨操作列 */
-    background: var(--card);
-    z-index: 4;
-    white-space: nowrap;
-}
+    .col-start {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: var(--card);
+    }
 
-/* 回款列：80px */
-.col-payment {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
-    position: sticky;
-    right: 150px + 80px; /* 紧挨提成列 */
-    right: 230px;
-    background: var(--card);
-    z-index: 4;
-    white-space: nowrap;
-}
+    .col-unit {
+      max-width: 160px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
-/* 发票列：80px */
-.col-invoice {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
-    position: sticky;
-    right: 230px + 80px; /* 紧挨回款列 */
-    right: 310px;
-    background: var(--card);
-    z-index: 4;
-    white-space: nowrap;
-}
+    .col-name {
+      max-width: 280px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
-/* 合同列：80px */
-.col-contract {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
-    position: sticky;
-    right: 310px + 80px; /* 紧挨发票列 */
-    right: 390px;
-    background: var(--card);
-    z-index: 4;
-    white-space: nowrap;
-}
- 
+    .col-customer,
+    .col-manager,
+    .col-amount {
+      max-width: 80px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .col-action {
+      width: 150px;
+      min-width: 150px;
+      max-width: 150px;
+      position: sticky;
+      right: 0;
+      background: var(--card);
+      z-index: 5;
+      white-space: nowrap;
+    }
+
+    .col-commission {
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+      position: sticky;
+      right: 150px;
+      background: var(--card);
+      z-index: 4;
+      white-space: nowrap;
+    }
+
+    .col-payment {
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+      position: sticky;
+      right: 230px;
+      background: var(--card);
+      z-index: 4;
+      white-space: nowrap;
+    }
+
+    .col-invoice {
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+      position: sticky;
+      right: 310px;
+      background: var(--card);
+      z-index: 4;
+      white-space: nowrap;
+    }
+
+    .col-contract {
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+      position: sticky;
+      right: 390px;
+      background: var(--card);
+      z-index: 4;
+      white-space: nowrap;
+    }
+
     textarea {
       width: 100%;
       resize: vertical;
@@ -478,7 +448,6 @@
       flex-wrap: wrap;
     }
 
-    /* 查看窗口 4 列网格 */
     .view-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -540,24 +509,20 @@
       padding-top: 0;
     }
 
-/* 行基础过渡效果 */
-#dataTable tbody tr {
-  transition:
-    box-shadow 0.2s ease;
-}
+    #dataTable tbody tr {
+      transition: box-shadow 0.2s ease;
+    }
 
-/* 行 hover：只负责阴影和层级，不管背景色 */
-#dataTable tbody tr:hover {
-  box-shadow: 0 2px 6px rgba(0,0,0,.10);
-  position: relative;
-  z-index: 10;
-}
+    #dataTable tbody tr:hover {
+      box-shadow: 0 2px 6px rgba(0,0,0,.10);
+      position: relative;
+      z-index: 10;
+    }
 
-/* 颜色和质感全部交给 td 来统一控制 */
-#dataTable tbody tr:hover td {
-  background: var(--row-hover-bg) !important;
-  color: var(--row-hover-text) !important;
-}
+    #dataTable tbody tr:hover td {
+      background: var(--row-hover-bg) !important;
+      color: var(--row-hover-text) !important;
+    }
 
     #pagination {
       position: fixed;
@@ -693,16 +658,6 @@
       background: #ff7875;
     }
 
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    select {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--line);
-    }
-
-
     @keyframes fadeIn {
       from {
         transform: translateY(-20px);
@@ -715,6 +670,7 @@
     }
   </style>
 </head>
+
 <body>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
@@ -728,9 +684,9 @@
   <div id="loginBox">
     <div class="login-panel">
       <h3>账号登录</h3>
-      <label>用户名</label>
+      <label for="loginUser">用户名</label>
       <input id="loginUser" placeholder="请输入用户名">
-      <label>密码</label>
+      <label for="loginPass">密码</label>
       <input id="loginPass" type="password" placeholder="请输入密码">
       <button onclick="login()">登录</button>
     </div>
@@ -740,14 +696,13 @@
     <div class="topBar-inner">
       <h1>项目管理系统</h1>
       <div class="stats" id="stats"></div>
+
       <div class="toolbar">
         <button onclick="openAdd()" id="btnAdd">新增订单</button>
-		  
-		  <button id="btnBackupManager" onclick="openBackupManager()" style="display:none;">备份管理</button>
-		  
-        <button class="gray" onclick="exportOrdersExcel()" id="btnExport">
-          数据导出
-        </button>
+        <button id="btnBackupManager" onclick="openBackupManager()" style="display:none;">备份管理</button>
+
+        <button class="gray" onclick="exportOrdersExcel()" id="btnExport">数据导出</button>
+
         <input
           type="file"
           id="importExcel"
@@ -755,6 +710,7 @@
           onchange="importOrdersExcel(event)"
           style="display:none;"
         >
+
         <button
           id="btnImport"
           class="gray"
@@ -768,10 +724,11 @@
           id="keyword"
           placeholder="搜索项目/单位/客户/经理/电话"
           oninput="render()"
-          style="flex:1; min-width:220px; background:var(--card); color:var(--text);"
+          style="flex:1; min-width:220px;"
         >
+
         <button onclick="location.href='finance.html'">财务系统</button>
-        <button onclick="toggleTheme()" >切换模式</button>
+        <button onclick="toggleTheme()">切换模式</button>
       </div>
     </div>
   </div>
@@ -792,7 +749,6 @@
             <th class="col-payment">回款</th>
             <th class="col-commission">提成</th>
             <th class="col-action">操作</th>
-
           </tr>
         </thead>
         <tbody></tbody>
@@ -801,65 +757,60 @@
   </div>
 
   <div id="pagination"></div>
-  <!-- 新增 / 编辑弹窗 -->
+
+  <!-- 编辑/新增订单弹窗 -->
   <div class="modal" id="editModal">
     <div class="modal-content">
       <h3 id="modalTitle">订单信息</h3>
 
       <div class="form-grid">
-
-        <!-- 第 1 行: 开始时间 + 项目单位 -->
         <div class="form-row row-1">
-          <label>开始时间</label>
+          <label for="m_startDate">开始时间</label>
           <input id="m_startDate" type="date" class="date-input">
         </div>
 
         <div class="form-row row-1">
-          <label>项目单位</label>
+          <label for="m_unit">项目单位</label>
           <input id="m_unit">
         </div>
 
-        <!-- 第 2 行: 项目名称 + 签约金额 -->
         <div class="form-row row-2">
-          <label>项目名称</label>
+          <label for="m_name">项目名称</label>
           <input id="m_name">
         </div>
 
         <div class="form-row row-2" id="edit_amount_row">
-          <label>签约金额</label>
+          <label for="m_amount">签约金额</label>
           <input id="m_amount" type="number">
         </div>
 
-        <!-- 第 3 行: 客户名 + 联系电话 -->
         <div class="form-row row-3">
-          <label>客户名</label>
+          <label for="m_customer">客户名</label>
           <input id="m_customer">
         </div>
 
         <div class="form-row row-3">
-          <label>联系电话</label>
+          <label for="m_phone">联系电话</label>
           <input id="m_phone">
         </div>
 
-        <!-- 第 4 行: 客户经理 + 课程顾问 + 课程编导 -->
         <div class="form-row row-4">
-          <label>客户经理</label>
+          <label for="m_manager">客户经理</label>
           <input id="m_manager">
         </div>
 
         <div class="form-row row-4">
-          <label>课程顾问</label>
+          <label for="m_consultant">课程顾问</label>
           <input id="m_consultant">
         </div>
 
         <div class="form-row row-4 row-4-last">
-          <label>课程编导</label>
+          <label for="m_director">课程编导</label>
           <input id="m_director">
         </div>
 
-        <!-- 第 5 行: 合同 + 发票 + 回款 + 提成 -->
         <div class="form-row">
-          <label>合同</label>
+          <label for="m_contract">合同</label>
           <select id="m_contract">
             <option>未签约</option>
             <option>已签约</option>
@@ -868,7 +819,7 @@
         </div>
 
         <div class="form-row">
-          <label>发票</label>
+          <label for="m_invoice">发票</label>
           <select id="m_invoice">
             <option>未开票</option>
             <option>已开票</option>
@@ -877,7 +828,7 @@
         </div>
 
         <div class="form-row">
-          <label>回款</label>
+          <label for="m_payment">回款</label>
           <select id="m_payment">
             <option>未回款</option>
             <option>已回款</option>
@@ -886,7 +837,7 @@
         </div>
 
         <div class="form-row">
-          <label>提成</label>
+          <label for="m_commission">提成</label>
           <select id="m_commission">
             <option>未结算</option>
             <option>已结算</option>
@@ -894,12 +845,10 @@
           </select>
         </div>
 
-        <!-- 第 6 行: 备注 -->
         <div class="form-row full-row">
-          <label>备注</label>
+          <label for="m_remark">备注</label>
           <textarea id="m_remark" rows="4"></textarea>
         </div>
-
       </div>
 
       <div class="actions">
@@ -909,14 +858,12 @@
     </div>
   </div>
 
-  <!-- 查看弹窗 -->
+  <!-- 查看订单弹窗 -->
   <div class="modal" id="viewModal">
     <div class="modal-content">
       <h3>订单详情</h3>
 
       <div id="viewBody" class="view-grid">
-
-        <!-- 第 1 行 -->
         <div class="view-row row-1">
           <label>开始时间</label>
           <span id="v_startDate"></span>
@@ -927,7 +874,6 @@
           <span id="v_unit"></span>
         </div>
 
-        <!-- 第 2 行 -->
         <div class="view-row row-2">
           <label>项目名称</label>
           <span id="v_name"></span>
@@ -938,7 +884,6 @@
           <span id="v_amount"></span>
         </div>
 
-        <!-- 第 3 行 -->
         <div class="view-row row-3">
           <label>客户名</label>
           <span id="v_customer"></span>
@@ -949,7 +894,6 @@
           <span id="v_phone"></span>
         </div>
 
-        <!-- 第 4 行 -->
         <div class="view-row row-4">
           <label>客户经理</label>
           <span id="v_manager"></span>
@@ -965,7 +909,6 @@
           <span id="v_director"></span>
         </div>
 
-        <!-- 第 5 行 -->
         <div class="view-row">
           <label>合同</label>
           <span id="v_contract"></span>
@@ -986,12 +929,10 @@
           <span id="v_commission"></span>
         </div>
 
-        <!-- 第 6 行 -->
         <div class="view-row full-row">
           <label>备注</label>
           <div id="v_remark" class="remark-box"></div>
         </div>
-
       </div>
 
       <div class="actions" style="margin-top:12px; border-top:none; padding-top:0;">
@@ -999,22 +940,20 @@
       </div>
     </div>
   </div>
-	
-	<!-- 备份弹窗 -->
-	<div id="backupModal" class="modal" style="display:none;">
-  <div class="modal-content" style="width:600px;">
-    <h2>备份管理</h2>
 
-    <div id="backupList">加载中...</div>
-
-    <div style="margin-top:20px; text-align:right;">
-      <button onclick="cleanupBackups()">清理30天前备份</button>
-      <button onclick="closeBackupManager()">关闭</button>
+  <!-- 备份管理 -->
+  <div class="modal" id="backupModal" style="display:none;">
+    <div class="modal-content" style="width:600px;">
+      <h2>备份管理</h2>
+      <div id="backupList">加载中...</div>
+      <div style="margin-top:20px; text-align:right;">
+        <button onclick="cleanupBackups()">清理30天前备份</button>
+        <button onclick="closeBackupManager()">关闭</button>
+      </div>
     </div>
   </div>
-</div>
 
-  <!-- 删除弹窗 -->
+  <!-- 删除确认 -->
   <div class="modal" id="deleteModal">
     <div class="modal-content">
       <h3>确认删除</h3>
@@ -1025,919 +964,761 @@
       </div>
     </div>
   </div>
-	
-	<!-- 完成确认弹窗 -->
-<div class="modal" id="completeModal">
-  <div class="modal-content" style="max-width:400px; text-align:center;">
-    <h3 style="color:#1677ff;">确认操作</h3>
-    <p id="completeText"></p>
-    <div class="actions" style="justify-content:center; border-top:none;">
-      <button class="danger" onclick="confirmComplete()">确认</button>
-      <button class="gray" onclick="closeComplete()">取消</button>
+
+  <!-- 完成状态确认 -->
+  <div class="modal" id="completeModal">
+    <div class="modal-content" style="max-width:400px; text-align:center;">
+      <h3 style="color:#1677ff;">确认操作</h3>
+      <p id="completeText"></p>
+      <div class="actions" style="justify-content:center; border-top:none;">
+        <button class="danger" onclick="confirmComplete()">确认</button>
+        <button class="gray" onclick="closeComplete()">取消</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-/* ============================
-   全局变量
-   ============================ */
-let currentRole = null;
-let orders = [];
-let editIndex = null;
-let deleteIndex = null;
-let completeIndex = null;
-let currentPage = 1;
-const pageSize = 16;
+  <script>
+    let currentRole = null;
+    let orders = [];
+    let editIndex = null;
+    let deleteIndex = null;
+    let completeIndex = null;
+    let currentPage = 1;
+    const pageSize = 16;
 
-/* ============================
-   云端订单读写：Cloudflare KV
-   ============================ */
-// 从云端加载订单
-async function loadOrdersFromCloud() {
-  try {
-    const res = await fetch("https://login-api.moon-2f1.workers.dev/getOrders");
-    const data = await res.json();
-    orders = Array.isArray(data) ? data : [];
-    render();
-  } catch (err) {
-    console.error("加载云端订单失败：", err);
-    orders = [];
-    render();
-  }
-}
-
-// 保存订单到云端
-async function saveOrdersToCloud() {
-  try {
-    await fetch("https://login-api.moon-2f1.workers.dev/saveOrders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orders)
-    });
-  } catch (err) {
-    console.error("保存订单到云端失败：", err);
-  }
-}
-
-// 每日备份到云端
-async function backupOrdersToCloud() {
-  try {
-    const today = new Date().toISOString().slice(0, 10); // 2025-12-24
-    await fetch("https://login-api.moon-2f1.workers.dev/backupOrders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date: today, orders })
-    });
-    console.log("已触发云端备份：", today);
-  } catch (err) {
-    console.error("云端备份失败：", err);
-  }
-}
-
-// 每日自动备份（只控制是否当天已备份）
-async function dailyBackup() {
-  const today = new Date().toISOString().slice(0, 10);
-  const lastBackup = localStorage.getItem("lastBackupDate");
-  if (lastBackup === today) return; // 今天已经备份过
-
-  await backupOrdersToCloud();
-  localStorage.setItem("lastBackupDate", today);
-}
-
-/* ============================
-   登录系统（管理员/成员/财务）
-   ============================ */
-// 登录函数：调用 Cloudflare Worker 后端
-async function login() {
-  const u = document.getElementById("loginUser").value.trim();
-  const p = document.getElementById("loginPass").value.trim();
-
-  if (!u || !p) {
-    alert("请输入用户名和密码");
-    return;
-  }
-
-  try {
-    const res = await fetch("https://login-api.moon-2f1.workers.dev/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: u, password: p })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      alert(data.message || "账号或密码错误");
-      return;
+    async function loadOrdersFromCloud() {
+      try {
+        const res = await fetch("https://login-api.moon-2f1.workers.dev/getOrders");
+        const data = await res.json();
+        orders = Array.isArray(data) ? data : [];
+        render();
+      } catch (err) {
+        console.error("加载云端订单失败：", err);
+        orders = [];
+        render();
+      }
     }
 
-    currentRole = data.role;
-
-    localStorage.setItem("role", data.role);
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("username", u);
-
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("userBar").style.display = "flex";
-
-    // 不显示账号，只显示身份
-    document.getElementById("userName").innerText = "";
-    document.getElementById("userRole").innerText = data.display || "";
-    document.getElementById("userAvatar").style.display = "none";
-
-    applyRolePermissions();
-    // 登录后：先加载订单，再做每日云端备份
-    await loadOrdersFromCloud();
-    await dailyBackup();
-  } catch (err) {
-    console.error("登录请求失败：", err);
-    alert("登录服务异常，请稍后重试");
-  }
-}
-
-// 登录窗口：按 Enter 自动登录
-document.addEventListener("keydown", function (e) {
-  const loginBox = document.getElementById("loginBox");
-  if (loginBox.style.display !== "none" && e.key === "Enter") {
-    login();
-  }
-});
-
-/* ============================
-   权限控制
-   ============================ */
-function applyRolePermissions() {
-  const btnExport = document.getElementById("btnExport");
-  const btnImport = document.getElementById("btnImport");
-  const editAmountRow = document.getElementById("edit_amount_row");
-
-  // 成员隐藏金额输入框
-  if (currentRole === "staff") {
-    if (editAmountRow) editAmountRow.style.display = "none";
-  } else {
-    if (editAmountRow) editAmountRow.style.display = "block";
-  }
-
-  // 导入导出权限
-  if (currentRole === "admin") {
-    if (btnExport) btnExport.style.display = "inline-block";
-    if (btnImport) btnImport.style.display = "inline-block";
-  } else {
-    if (btnExport) btnExport.style.display = "none";
-    if (btnImport) btnImport.style.display = "none";
-  }
-	// 备份权限
-	const btnBackupManager = document.getElementById("btnBackupManager");
-
-if (currentRole === "admin") {
-    if (btnBackupManager) btnBackupManager.style.display = "inline-block";
-} else {
-    if (btnBackupManager) btnBackupManager.style.display = "none";
-}
-}
-
-/* ============================
-   初始化：强制重新登录
-   ============================ */
-window.onload = function () {
-  currentRole = null;
-  localStorage.removeItem("role");
-  localStorage.removeItem("username");
-
-  document.getElementById("loginBox").style.display = "flex";
-  document.getElementById("userBar").style.display = "none";
-};
-
-/* ============================
-   工具函数：金额格式化
-   ============================ */
-function fmtMoney(n) {
-  const x = Number(n || 0);
-  return isNaN(x) ? "0" : x.toLocaleString("zh-CN");
-}
-
-/* ============================
-   工具函数：标签渲染
-   ============================ */
-function tag(val) {
-  if (!val) return "";
-
-  let cls = "";
-  if (["已签约", "已开票", "已回款", "已结算"].includes(val)) cls = "green";
-  else if (["未签约", "未开票", "未回款", "未结算"].includes(val)) cls = "red";
-  else if (["不签约", "不开票", "少回款", "无提成"].includes(val)) cls = "lightgreen";
-
-  return `<span class="tag ${cls}">${val}</span>`;
-}
-
-/* ============================
-   主渲染函数 render()
-   ============================ */
-function render() {
-  if (!currentRole) return;
-
-  const kw = document.getElementById("keyword").value.trim().toLowerCase();
-  const tbody = document.querySelector("#dataTable tbody");
-  tbody.innerHTML = "";
-
-  // 排序：按开始时间或创建时间倒序
-  let data = [...orders].sort((a, b) => {
-    const ta = new Date(a.startDate || a.createTime || 0);
-    const tb = new Date(b.startDate || b.createTime || 0);
-    return tb - ta;
-  });
-
-  // 搜索过滤
-  data = data.filter((o) => {
-    if (!kw) return true;
-    return JSON.stringify(o).toLowerCase().includes(kw);
-  });
-
-  const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
-  if (currentPage > totalPages) currentPage = totalPages;
-
-  const start = (currentPage - 1) * pageSize;
-  const pageData = data.slice(start, start + pageSize);
-
-  pageData.forEach((o) => {
-    const idx = orders.indexOf(o);
-    const tr = document.createElement("tr");
-
-    const amountDisplay =
-      currentRole === "staff" ? "-" : "¥" + fmtMoney(o.amount);
-
-    // 删除按钮（仅管理员）
-    const deleteBtn =
-      currentRole === "admin"
-        ? `<button class="danger" onclick="removeOrder(${idx});event.stopPropagation();">删除</button>`
-        : "";
-
-    // 完成按钮（仅管理员）
-    const completeBtn =
-      currentRole === "admin"
-        ? o.completed
-          ? `<button class="gray" style="background:#52c41a;" onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
-          : `<button onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
-        : "";
-
-    tr.innerHTML = `
-      <td class="col-start">${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""}</td>
-      <td class="col-unit">${o.unit || ""}</td>
-      <td class="col-name">${o.name || ""}</td>
-      <td class="col-customer">${o.customer || ""}</td>
-      <td class="col-manager">${o.manager || ""}</td>
-      <td class="col-amount">${amountDisplay}</td>
-      <td class="col-contract">${tag(o.contract || "")}</td> 
-      <td class="col-invoice">${tag(o.invoice || "")}</td> 
-      <td class="col-payment">${tag(o.payment || "")}</td> 
-      <td class="col-commission">${tag(o.commission || "")}</td> 
-      <td class="col-action">
-        <button onclick="edit(${idx});event.stopPropagation();" ${o.completed ? "disabled" : ""}>编辑</button>
-        ${completeBtn}
-        ${deleteBtn}
-      </td>
-    `;
-
-    // 点击整行 → 查看详情
-    tr.onclick = () => view(idx);
-
-    tbody.appendChild(tr);
-  });
-
-  renderStats(data);
-  renderPagination(totalPages);
-}
-
-/* ============================
-   统计卡片 renderStats()
-   ============================ */
-function renderStats(filteredData) {
-  const stats = document.getElementById("stats");
-
-  // 成员只显示订单数量
-  if (currentRole === "staff") {
-    stats.innerHTML = `
-      <div class="card"><span>订单数量</span><b>${orders.length}</b></div>
-    `;
-    return;
-  }
-
-  let total = 0,
-    paid = 0;
-
-  orders.forEach((o) => {
-    const amt = Number(o.amount || 0);
-    if (!isNaN(amt)) {
-      total += amt;
-      if (o.payment === "已回款") paid += amt;
+    async function saveOrdersToCloud() {
+      try {
+        await fetch("https://login-api.moon-2f1.workers.dev/saveOrders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orders)
+        });
+      } catch (err) {
+        console.error("保存订单到云端失败：", err);
+      }
     }
-  });
 
-  let filteredAmount = 0;
-  (filteredData || []).forEach((o) => {
-    const amt = Number(o.amount || 0);
-    if (!isNaN(amt)) filteredAmount += amt;
-  });
-
-  stats.innerHTML = `
-    <div class="card"><span>订单数量</span><b>${orders.length}</b></div>
-    <div class="card"><span>签约总额</span><b>¥${fmtMoney(total)}</b></div>
-    <div class="card"><span>已回款总额</span><b>¥${fmtMoney(paid)}</b></div>
-    <div class="card"><span>未回款总额</span><b>¥${fmtMoney(total - paid)}</b></div>
-    <div class="card"><span>筛选订单金额</span><b>¥${fmtMoney(filteredAmount)}</b></div>
-  `;
-}
-
-/* ============================
-   分页 renderPagination()
-   ============================ */
-function renderPagination(totalPages) {
-  const container = document.getElementById("pagination");
-  container.innerHTML = "";
-  if (totalPages <= 1) return;
-
-  // 首页
-  const first = document.createElement("button");
-  first.textContent = "首页";
-  first.disabled = currentPage === 1;
-  first.onclick = () => {
-    currentPage = 1;
-    render();
-  };
-  container.appendChild(first);
-
-  // 上一页
-  const prev = document.createElement("button");
-  prev.textContent = "上一页";
-  prev.disabled = currentPage === 1;
-  prev.onclick = () => {
-    if (currentPage > 1) {
-      currentPage--;
-      render();
+    async function backupOrdersToCloud() {
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        await fetch("https://login-api.moon-2f1.workers.dev/backupOrders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ date: today, orders })
+        });
+        console.log("已触发云端备份：", today);
+      } catch (err) {
+        console.error("云端备份失败：", err);
+      }
     }
-  };
-  container.appendChild(prev);
 
-  // 中间页码
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    if (i === currentPage) btn.className = "gray";
-    btn.onclick = () => {
-      currentPage = i;
-      render();
+    async function dailyBackup() {
+      const today = new Date().toISOString().slice(0, 10);
+      const lastBackup = localStorage.getItem("lastBackupDate");
+      if (lastBackup === today) return;
+      await backupOrdersToCloud();
+      localStorage.setItem("lastBackupDate", today);
+    }
+
+    async function login() {
+      const u = document.getElementById("loginUser").value.trim();
+      const p = document.getElementById("loginPass").value.trim();
+      if (!u || !p) {
+        alert("请输入用户名和密码");
+        return;
+      }
+
+      try {
+        const res = await fetch("https://login-api.moon-2f1.workers.dev/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p })
+        });
+
+        const data = await res.json();
+        if (!data.success) {
+          alert(data.message || "账号或密码错误");
+          return;
+        }
+
+        currentRole = data.role;
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", u);
+
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("userBar").style.display = "flex";
+        document.getElementById("userName").innerText = "";
+        document.getElementById("userRole").innerText = data.display || "";
+        document.getElementById("userAvatar").style.display = "none";
+
+        applyRolePermissions();
+        await loadOrdersFromCloud();
+        await dailyBackup();
+      } catch (err) {
+        console.error("登录请求失败：", err);
+        alert("登录服务异常，请稍后重试");
+      }
+    }
+
+    document.addEventListener("keydown", function (e) {
+      const loginBox = document.getElementById("loginBox");
+      if (loginBox.style.display !== "none" && e.key === "Enter") {
+        login();
+      }
+    });
+
+    function applyRolePermissions() {
+      const btnExport = document.getElementById("btnExport");
+      const btnImport = document.getElementById("btnImport");
+      const editAmountRow = document.getElementById("edit_amount_row");
+      const btnBackupManager = document.getElementById("btnBackupManager");
+
+      if (currentRole === "staff") {
+        if (editAmountRow) editAmountRow.style.display = "none";
+      } else {
+        if (editAmountRow) editAmountRow.style.display = "block";
+      }
+
+      if (currentRole === "admin") {
+        if (btnExport) btnExport.style.display = "inline-block";
+        if (btnImport) btnImport.style.display = "inline-block";
+        if (btnBackupManager) btnBackupManager.style.display = "inline-block";
+      } else {
+        if (btnExport) btnExport.style.display = "none";
+        if (btnImport) btnImport.style.display = "none";
+        if (btnBackupManager) btnBackupManager.style.display = "none";
+      }
+    }
+
+    window.onload = function () {
+      currentRole = null;
+      localStorage.removeItem("role");
+      localStorage.removeItem("username");
+      document.getElementById("loginBox").style.display = "flex";
+      document.getElementById("userBar").style.display = "none";
     };
-    container.appendChild(btn);
-  }
 
-  // 下一页
-  const next = document.createElement("button");
-  next.textContent = "下一页";
-  next.disabled = currentPage === totalPages;
-  next.onclick = () => {
-    if (currentPage < totalPages) {
-      currentPage++;
+    function fmtMoney(n) {
+      const x = Number(n || 0);
+      return isNaN(x) ? "0" : x.toLocaleString("zh-CN");
+    }
+
+    function tag(val) {
+      if (!val) return "";
+      let cls = "";
+      if (["已签约", "已开票", "已回款", "已结算"].includes(val)) cls = "green";
+      else if (["未签约", "未开票", "未回款", "未结算"].includes(val)) cls = "red";
+      else if (["不签约", "不开票", "少回款", "无提成"].includes(val)) cls = "lightgreen";
+      return `<span class="tag ${cls}">${val}</span>`;
+    }
+
+    function render() {
+      if (!currentRole) return;
+
+      const kw = document.getElementById("keyword").value.trim().toLowerCase();
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+
+      let data = [...orders].sort((a, b) => {
+        const ta = new Date(a.startDate || a.createTime || 0);
+        const tb = new Date(b.startDate || b.createTime || 0);
+        return tb - ta;
+      });
+
+      data = data.filter((o) => {
+        if (!kw) return true;
+        return JSON.stringify(o).toLowerCase().includes(kw);
+      });
+
+      const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * pageSize;
+      const pageData = data.slice(start, start + pageSize);
+
+      pageData.forEach((o) => {
+        const idx = orders.indexOf(o);
+        const tr = document.createElement("tr");
+
+        const amountDisplay = currentRole === "staff" ? "-" : "¥" + fmtMoney(o.amount);
+
+        const deleteBtn =
+          currentRole === "admin"
+            ? `<button class="danger" onclick="removeOrder(${idx});event.stopPropagation();">删除</button>`
+            : "";
+
+        const completeBtn =
+          currentRole === "admin"
+            ? o.completed
+              ? `<button class="gray" style="background:#52c41a;" onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
+              : `<button onclick="toggleComplete(${idx});event.stopPropagation();">完成</button>`
+            : "";
+
+        tr.innerHTML = `
+          <td class="col-start">${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""}</td>
+          <td class="col-unit">${o.unit || ""}</td>
+          <td class="col-name">${o.name || ""}</td>
+          <td class="col-customer">${o.customer || ""}</td>
+          <td class="col-manager">${o.manager || ""}</td>
+          <td class="col-amount">${amountDisplay}</td>
+          <td class="col-contract">${tag(o.contract || "")}</td>
+          <td class="col-invoice">${tag(o.invoice || "")}</td>
+          <td class="col-payment">${tag(o.payment || "")}</td>
+          <td class="col-commission">${tag(o.commission || "")}</td>
+          <td class="col-action">
+            <button onclick="edit(${idx});event.stopPropagation();" ${o.completed ? "disabled" : ""}>编辑</button>
+            ${completeBtn}
+            ${deleteBtn}
+          </td>
+        `;
+
+        tr.onclick = () => view(idx);
+        tbody.appendChild(tr);
+      });
+
+      renderStats(data);
+      renderPagination(totalPages);
+    }
+
+    function renderStats(filteredData) {
+      const stats = document.getElementById("stats");
+
+      if (currentRole === "staff") {
+        stats.innerHTML = `
+          <div class="card"><span>订单数量</span><b>${orders.length}</b></div>
+        `;
+        return;
+      }
+
+      let total = 0;
+      let paid = 0;
+
+      orders.forEach((o) => {
+        const amt = Number(o.amount || 0);
+        if (!isNaN(amt)) {
+          total += amt;
+          if (o.payment === "已回款") paid += amt;
+        }
+      });
+
+      let filteredAmount = 0;
+      (filteredData || []).forEach((o) => {
+        const amt = Number(o.amount || 0);
+        if (!isNaN(amt)) filteredAmount += amt;
+      });
+
+      stats.innerHTML = `
+        <div class="card"><span>订单数量</span><b>${orders.length}</b></div>
+        <div class="card"><span>签约总额</span><b>¥${fmtMoney(total)}</b></div>
+        <div class="card"><span>已回款总额</span><b>¥${fmtMoney(paid)}</b></div>
+        <div class="card"><span>未回款总额</span><b>¥${fmtMoney(total - paid)}</b></div>
+        <div class="card"><span>筛选订单金额</span><b>¥${fmtMoney(filteredAmount)}</b></div>
+      `;
+    }
+
+    function renderPagination(totalPages) {
+      const container = document.getElementById("pagination");
+      container.innerHTML = "";
+      if (totalPages <= 1) return;
+
+      const first = document.createElement("button");
+      first.textContent = "首页";
+      first.disabled = currentPage === 1;
+      first.onclick = () => {
+        currentPage = 1;
+        render();
+      };
+      container.appendChild(first);
+
+      const prev = document.createElement("button");
+      prev.textContent = "上一页";
+      prev.disabled = currentPage === 1;
+      prev.onclick = () => {
+        if (currentPage > 1) {
+          currentPage--;
+          render();
+        }
+      };
+      container.appendChild(prev);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPage) btn.className = "gray";
+        btn.onclick = () => {
+          currentPage = i;
+          render();
+        };
+        container.appendChild(btn);
+      }
+
+      const next = document.createElement("button");
+      next.textContent = "下一页";
+      next.disabled = currentPage === totalPages;
+      next.onclick = () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          render();
+        }
+      };
+      container.appendChild(next);
+
+      const last = document.createElement("button");
+      last.textContent = "尾页";
+      last.disabled = currentPage === totalPages;
+      last.onclick = () => {
+        currentPage = totalPages;
+        render();
+      };
+      container.appendChild(last);
+
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = 1;
+      input.max = totalPages;
+      input.placeholder = "页码";
+      input.style.width = "60px";
+
+      const go = document.createElement("button");
+      go.textContent = "GO";
+      go.onclick = () => {
+        let page = Number(input.value);
+        if (!page || page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+        currentPage = page;
+        render();
+      };
+
+      container.appendChild(input);
+      container.appendChild(go);
+    }
+
+    function openAdd() {
+      editIndex = null;
+      document
+        .querySelectorAll("#editModal input, #editModal select, #editModal textarea")
+        .forEach((i) => (i.value = ""));
+
+      document.getElementById("m_contract").value = "未签约";
+      document.getElementById("m_invoice").value = "未开票";
+      document.getElementById("m_payment").value = "未回款";
+      document.getElementById("m_commission").value = "未结算";
+
+      document.getElementById("modalTitle").innerText = "新增订单";
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
+
+    function view(i) {
+      const o = orders[i];
+      if (!o) return;
+
+      document.getElementById("v_startDate").innerText = o.startDate || "";
+      document.getElementById("v_unit").innerText = o.unit || "";
+      document.getElementById("v_name").innerText = o.name || "";
+      document.getElementById("v_amount").innerText =
+        currentRole === "staff" ? "-" : "¥" + fmtMoney(o.amount);
+      document.getElementById("v_customer").innerText = o.customer || "";
+      document.getElementById("v_phone").innerText = o.phone || "";
+      document.getElementById("v_manager").innerText = o.manager || "";
+      document.getElementById("v_consultant").innerText = o.consultant || "";
+      document.getElementById("v_director").innerText = o.director || "";
+      document.getElementById("v_contract").innerText = o.contract || "";
+      document.getElementById("v_invoice").innerText = o.invoice || "";
+      document.getElementById("v_payment").innerText = o.payment || "";
+      document.getElementById("v_commission").innerText = o.commission || "";
+      document.getElementById("v_remark").innerText = o.remark || "";
+
+      document.getElementById("viewModal").style.display = "flex";
+    }
+
+    function closeView() {
+      document.getElementById("viewModal").style.display = "none";
+    }
+
+    function edit(i) {
+      if (orders[i].completed && currentRole !== "admin") {
+        alert("该订单已完成，无法编辑");
+        return;
+      }
+
+      editIndex = i;
+      const o = orders[i];
+      if (!o) return;
+
+      document.getElementById("m_name").value = o.name || "";
+      document.getElementById("m_startDate").value = o.startDate || "";
+      document.getElementById("m_unit").value = o.unit || "";
+      document.getElementById("m_customer").value = o.customer || "";
+      document.getElementById("m_phone").value = o.phone || "";
+      document.getElementById("m_manager").value = o.manager || "";
+      document.getElementById("m_amount").value = o.amount || "";
+      document.getElementById("m_remark").value = o.remark || "";
+      document.getElementById("m_consultant").value = o.consultant || "";
+      document.getElementById("m_director").value = o.director || "";
+      document.getElementById("m_contract").value = o.contract || "未签约";
+      document.getElementById("m_invoice").value = o.invoice || "未开票";
+      document.getElementById("m_payment").value = o.payment || "未回款";
+      document.getElementById("m_commission").value = o.commission || "未结算";
+
+      document.getElementById("modalTitle").innerText = "编辑订单";
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function removeOrder(i) {
+      if (currentRole !== "admin") {
+        alert("只有管理员可以删除订单");
+        return;
+      }
+
+      deleteIndex = i;
+      const o = orders[i];
+      if (!o) return;
+
+      document.getElementById("deleteText").innerText =
+        `确定删除订单：${o.name || ""} / ${o.customer || ""}？`;
+      document.getElementById("deleteModal").style.display = "flex";
+    }
+
+    function closeDelete() {
+      document.getElementById("deleteModal").style.display = "none";
+    }
+
+    async function confirmDelete() {
+      if (deleteIndex === null) return;
+      orders.splice(deleteIndex, 1);
+      await saveOrdersToCloud();
+      deleteIndex = null;
+      closeDelete();
       render();
     }
-  };
-  container.appendChild(next);
 
-  // 尾页
-  const last = document.createElement("button");
-  last.textContent = "尾页";
-  last.disabled = currentPage === totalPages;
-  last.onclick = () => {
-    currentPage = totalPages;
-    render();
-  };
-  container.appendChild(last);
-
-  // 输入跳转
-  const input = document.createElement("input");
-  input.type = "number";
-  input.min = 1;
-  input.max = totalPages;
-  input.placeholder = "页码";
-  input.style.width = "60px";
-  input.style.padding = "4px 6px";
-  input.style.border = "1px solid #ccc";
-  input.style.borderRadius = "6px";
-
-  const go = document.createElement("button");
-  go.textContent = "GO";
-  go.onclick = () => {
-    let page = Number(input.value);
-    if (!page || page < 1) page = 1;
-    if (page > totalPages) page = totalPages;
-    currentPage = page;
-    render();
-  };
-
-  container.appendChild(input);
-  container.appendChild(go);
-}
-/* ============================
-   新增订单 openAdd()
-   ============================ */
-function openAdd() {
-  editIndex = null;
-
-  document
-    .querySelectorAll("#editModal input, #editModal select, #editModal textarea")
-    .forEach((i) => (i.value = ""));
-
-  document.getElementById("m_contract").value = "未签约";
-  document.getElementById("m_invoice").value = "未开票";
-  document.getElementById("m_payment").value = "未回款";
-  document.getElementById("m_commission").value = "未结算";
-
-  document.getElementById("modalTitle").innerText = "新增订单";
-  document.getElementById("editModal").style.display = "flex";
-}
-
-function closeModal() {
-  document.getElementById("editModal").style.display = "none";
-}
-
-/* ============================
-   查看订单 view()
-   ============================ */
-function view(i) {
-  const o = orders[i];
-  if (!o) return;
-
-  document.getElementById("v_startDate").innerText = o.startDate || "";
-  document.getElementById("v_unit").innerText = o.unit || "";
-  document.getElementById("v_name").innerText = o.name || "";
-  document.getElementById("v_amount").innerText =
-    currentRole === "staff" ? "-" : "¥" + fmtMoney(o.amount);
-  document.getElementById("v_customer").innerText = o.customer || "";
-  document.getElementById("v_phone").innerText = o.phone || "";
-  document.getElementById("v_manager").innerText = o.manager || "";
-  document.getElementById("v_consultant").innerText = o.consultant || "";
-  document.getElementById("v_director").innerText = o.director || "";
-  document.getElementById("v_contract").innerText = o.contract || "";
-  document.getElementById("v_invoice").innerText = o.invoice || "";
-  document.getElementById("v_payment").innerText = o.payment || "";
-  document.getElementById("v_commission").innerText = o.commission || "";
-  document.getElementById("v_remark").innerText = o.remark || "";
-
-  document.getElementById("viewModal").style.display = "flex";
-}
-
-function closeView() {
-  document.getElementById("viewModal").style.display = "none";
-}
-
-/* ============================
-   编辑订单 edit()
-   ============================ */
-function edit(i) {
-  // 非管理员禁止编辑已完成订单
-  if (orders[i].completed && currentRole !== "admin") {
-    alert("该订单已完成，无法编辑");
-    return;
-  }
-
-  editIndex = i;
-  const o = orders[i];
-  if (!o) return;
-
-  document.getElementById("m_name").value = o.name || "";
-  document.getElementById("m_startDate").value = o.startDate || "";
-  document.getElementById("m_unit").value = o.unit || "";
-  document.getElementById("m_customer").value = o.customer || "";
-  document.getElementById("m_phone").value = o.phone || "";
-  document.getElementById("m_manager").value = o.manager || "";
-  document.getElementById("m_amount").value = o.amount || "";
-  document.getElementById("m_remark").value = o.remark || "";
-  document.getElementById("m_consultant").value = o.consultant || "";
-  document.getElementById("m_director").value = o.director || "";
-
-  document.getElementById("m_contract").value = o.contract || "未签约";
-  document.getElementById("m_invoice").value = o.invoice || "未开票";
-  document.getElementById("m_payment").value = o.payment || "未回款";
-  document.getElementById("m_commission").value = o.commission || "未结算";
-
-  document.getElementById("modalTitle").innerText = "编辑订单";
-  document.getElementById("editModal").style.display = "flex";
-}
-
-/* ============================
-   删除订单 removeOrder()
-   ============================ */
-function removeOrder(i) {
-  if (currentRole !== "admin") {
-    alert("只有管理员可以删除订单");
-    return;
-  }
-
-  deleteIndex = i;
-  const o = orders[i];
-  if (!o) return;
-
-  document.getElementById("deleteText").innerText =
-    `确定删除订单：${o.name || ""} / ${o.customer || ""}？`;
-
-  document.getElementById("deleteModal").style.display = "flex";
-}
-
-function closeDelete() {
-  document.getElementById("deleteModal").style.display = "none";
-}
-
-async function confirmDelete() {
-  if (deleteIndex === null) return;
-
-  orders.splice(deleteIndex, 1);
-  await saveOrdersToCloud();
-
-  deleteIndex = null;
-  closeDelete();
-  render();
-}
-
-// 删除弹窗：按 Enter 自动确认删除
-document.addEventListener("keydown", function (e) {
-  const del = document.getElementById("deleteModal");
-  if (del && del.style.display === "flex" && e.key === "Enter") {
-    confirmDelete();
-  }
-});
-
-/* ============================
-   完成 / 取消完成：toggleComplete
-   ============================ */
-function toggleComplete(i) {
-  if (currentRole !== "admin") {
-    alert("只有管理员可以操作完成状态");
-    return;
-  }
-
-  completeIndex = i;
-  const o = orders[i];
-
-  const msg = o.completed
-    ? `确定取消订单【${o.name || ""}】的完成状态？`
-    : `确定将订单【${o.name || ""}】标记为已完成？`;
-
-  document.getElementById("completeText").innerText = msg;
-  document.getElementById("completeModal").style.display = "flex";
-}
-
-function closeComplete() {
-  document.getElementById("completeModal").style.display = "none";
-}
-
-async function confirmComplete() {
-  if (completeIndex === null) return;
-
-  // 切换完成状态：true→false 或 false→true
-  orders[completeIndex].completed = !orders[completeIndex].completed;
-
-  await saveOrdersToCloud();
-
-  completeIndex = null;
-  closeComplete();
-  render();
-}
-
-/* ============================
-   提成计算 calculate()
-   ============================ */
-function calculate(o) {
-  const rate = 0.1;
-  const amt = Number(o.amount || 0);
-
-  o.commissionAmount =
-    o.payment === "已回款" && !isNaN(amt)
-      ? (amt * rate).toFixed(2)
-      : "0";
-}
-
-/* ============================
-   保存订单 saveOrder()
-   ============================ */
-async function saveOrder() {
-  const o = {
-    name: document.getElementById("m_name").value,
-    startDate: document.getElementById("m_startDate").value,
-    unit: document.getElementById("m_unit").value,
-    customer: document.getElementById("m_customer").value,
-    phone: document.getElementById("m_phone").value,
-    manager: document.getElementById("m_manager").value,
-    amount: document.getElementById("m_amount").value,
-    remark: document.getElementById("m_remark").value,
-    consultant: document.getElementById("m_consultant").value,
-    director: document.getElementById("m_director").value,
-    contract: document.getElementById("m_contract").value,
-    invoice: document.getElementById("m_invoice").value,
-    payment: document.getElementById("m_payment").value,
-    commission: document.getElementById("m_commission").value,
-    // 保留完成状态（编辑时不重置）
-    completed: editIndex !== null ? orders[editIndex].completed : false,
-    createTime: new Date().toISOString()
-  };
-
-  calculate(o);
-
-  if (editIndex === null) {
-    orders.push(o);
-  } else {
-    orders[editIndex] = o;
-  }
-
-  await saveOrdersToCloud();
-  closeModal();
-  render();
-}
-
-/* ============================
-   完成订单 completeOrder()（旧按钮用到时）
-   ============================ */
-async function completeOrder(i) {
-  if (currentRole !== "admin") {
-    alert("只有管理员可以完成订单");
-    return;
-  }
-
-  // 弹出确认提示
-  if (!confirm("确认将该订单标记为已完成？完成后将无法再编辑。")) {
-    return;
-  }
-
-  // 锁定订单
-  orders[i].completed = true;
-  await saveOrdersToCloud();
-
-  render();
-}
-/* ============================
-   导出 Excel（仅管理员）
-   ============================ */
-function exportOrdersExcel() {
-  if (currentRole !== "admin") {
-    alert("只有管理员可以导出数据");
-    return;
-  }
-
-  if (!orders || !orders.length) {
-    alert("暂无数据可导出");
-    return;
-  }
-
-  const headers = [
-    "项目名称",
-    "开始时间",
-    "项目单位",
-    "客户名",
-    "联系电话",
-    "客户经理",
-    "签约金额",
-    "合同",
-    "发票",
-    "回款",
-    "提成",
-    "课程顾问",
-    "课程编导",
-    "备注",
-    "创建时间",
-    "是否完成"
-  ];
-
-  const rows = orders.map((o) => [
-    o.name || "",
-    o.startDate || "",
-    o.unit || "",
-    o.customer || "",
-    o.phone || "",
-    o.manager || "",
-    o.amount || "",
-    o.contract || "",
-    o.invoice || "",
-    o.payment || "",
-    o.commission || "",
-    o.consultant || "",
-    o.director || "",
-    o.remark || "",
-    o.createTime || "",
-    o.completed ? "已完成" : "未完成"
-  ]);
-
-  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "订单数据");
-
-  const ts = new Date().toISOString().slice(0, 19).replace("T", "-");
-  XLSX.writeFile(workbook, `订单导出-${ts}.xlsx`);
-}
-
-/* ============================
-   导入 Excel（仅管理员）
-   ============================ */
-function importOrdersExcel(event) {
-  if (currentRole !== "admin") {
-    alert("只有管理员可以导入数据");
-    return;
-  }
-
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = async function (e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet);
-
-    // 覆盖原有数据
-    orders = [];
-
-    rows.forEach((r) => {
-      orders.push({
-        name: r["项目名称"] || "",
-        startDate: r["开始时间"] || "",
-        unit: r["项目单位"] || "",
-        customer: r["客户名"] || "",
-        phone: r["联系电话"] || "",
-        manager: r["客户经理"] || "",
-        amount: r["签约金额"] || "",
-        contract: r["合同"] || "",
-        invoice: r["发票"] || "",
-        payment: r["回款"] || "",
-        commission: r["提成"] || "",
-        consultant: r["课程顾问"] || "",
-        director: r["课程编导"] || "",
-        remark: r["备注"] || "",
-        createTime: r["创建时间"] || new Date().toISOString(),
-        completed: r["是否完成"] === "已完成"
-      });
+    document.addEventListener("keydown", function (e) {
+      const del = document.getElementById("deleteModal");
+      if (del && del.style.display === "flex" && e.key === "Enter") {
+        confirmDelete();
+      }
     });
 
-    await saveOrdersToCloud();
-    render();
-  };
+    function toggleComplete(i) {
+      if (currentRole !== "admin") {
+        alert("只有管理员可以操作完成状态");
+        return;
+      }
 
-  reader.readAsArrayBuffer(file);
-}
+      completeIndex = i;
+      const o = orders[i];
+      const msg = o.completed
+        ? `确定取消订单【${o.name || ""}】的完成状态？`
+        : `确定将订单【${o.name || ""}】标记为已完成？`;
 
-	 // 备份管理逻辑
-	function openBackupManager() {
-  document.getElementById("backupModal").style.display = "flex";
-  loadBackupList();
-}
-
-function closeBackupManager() {
-  document.getElementById("backupModal").style.display = "none";
-}
-
-	async function loadBackupList() {
-  const box = document.getElementById("backupList");
-  box.innerHTML = "加载中...";
-
-  try {
-    const res = await fetch("https://login-api.moon-2f1.workers.dev/listBackups");
-    const list = await res.json();
-
-    if (!list.length) {
-      box.innerHTML = "<p>暂无备份</p>";
-      return;
+      document.getElementById("completeText").innerText = msg;
+      document.getElementById("completeModal").style.display = "flex";
     }
 
-    let html = "<table class='backup-table'><tr><th>备份日期</th><th>操作</th></tr>";
-
-    list.forEach(item => {
-      const key = item.name; // backup_2025-12-24
-      const date = key.replace("backup_", "");
-
-      html += `
-        <tr>
-          <td>${date}</td>
-          <td>
-            <button onclick="restoreBackup('${key}')">恢复</button>
-            <button onclick="deleteBackup('${key}')">删除</button>
-          </td>
-        </tr>
-      `;
-    });
-
-    html += "</table>";
-    box.innerHTML = html;
-
-  } catch (err) {
-    box.innerHTML = "加载失败";
-    console.error(err);
-  }
-}
-
-	async function restoreBackup(key) {
-  if (!confirm(`确定恢复备份：${key.replace("backup_", "")}？当前订单将被覆盖！`)) return;
-
-  try {
-    const res = await fetch("https://login-api.moon-2f1.workers.dev/restoreBackup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key })
-    });
-
-    const data = await res.json();
-    if (!data.success) {
-      alert("恢复失败：" + data.message);
-      return;
+    function closeComplete() {
+      document.getElementById("completeModal").style.display = "none";
     }
 
-    alert("恢复成功！");
-    await loadOrdersFromCloud();
-    render();
+    async function confirmComplete() {
+      if (completeIndex === null) return;
+      orders[completeIndex].completed = !orders[completeIndex].completed;
+      await saveOrdersToCloud();
+      completeIndex = null;
+      closeComplete();
+      render();
+    }
 
-  } catch (err) {
-    alert("恢复失败");
-    console.error(err);
-  }
-}
+    function calculate(o) {
+      const rate = 0.1;
+      const amt = Number(o.amount || 0);
+      o.commissionAmount =
+        o.payment === "已回款" && !isNaN(amt)
+          ? (amt * rate).toFixed(2)
+          : "0";
+    }
 
-	async function deleteBackup(key) {
-  if (!confirm(`确定删除备份：${key.replace("backup_", "")}？`)) return;
+    async function saveOrder() {
+      const o = {
+        name: document.getElementById("m_name").value,
+        startDate: document.getElementById("m_startDate").value,
+        unit: document.getElementById("m_unit").value,
+        customer: document.getElementById("m_customer").value,
+        phone: document.getElementById("m_phone").value,
+        manager: document.getElementById("m_manager").value,
+        amount: document.getElementById("m_amount").value,
+        remark: document.getElementById("m_remark").value,
+        consultant: document.getElementById("m_consultant").value,
+        director: document.getElementById("m_director").value,
+        contract: document.getElementById("m_contract").value,
+        invoice: document.getElementById("m_invoice").value,
+        payment: document.getElementById("m_payment").value,
+        commission: document.getElementById("m_commission").value,
+        completed: editIndex !== null ? orders[editIndex].completed : false,
+        createTime: new Date().toISOString()
+      };
 
-  try {
-    await fetch("https://login-api.moon-2f1.workers.dev/saveOrders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ deleteBackup: key })
-    });
+      calculate(o);
 
-    // 实际删除在 Worker 的 cleanup 或 deleteBackup 中处理
-    alert("删除成功");
-    loadBackupList();
+      if (editIndex === null) {
+        orders.push(o);
+      } else {
+        orders[editIndex] = o;
+      }
 
-  } catch (err) {
-    alert("删除失败");
-    console.error(err);
-  }
-}
+      await saveOrdersToCloud();
+      closeModal();
+      render();
+    }
 
-	async function cleanupBackups() {
-  if (!confirm("确定清理30天前的备份？此操作不可恢复！")) return;
+    function exportOrdersExcel() {
+      if (currentRole !== "admin") {
+        alert("只有管理员可以导出数据");
+        return;
+      }
 
-  try {
-    await fetch("https://login-api.moon-2f1.workers.dev/cleanupBackups");
-    alert("清理完成");
-    loadBackupList();
-  } catch (err) {
-    alert("清理失败");
-    console.error(err);
-  }
-}
-	
-	/* ============================
-   退出登录 logout()
-   ============================ */
-function logout() {
-  // 清除登录状态
-  currentRole = null;
-  orders = [];
-  editIndex = null;
-  deleteIndex = null;
-  completeIndex = null;
-  currentPage = 1;
+      if (!orders || !orders.length) {
+        alert("暂无数据可导出");
+        return;
+      }
 
-  // 清除本地存储的登录信息
-  localStorage.removeItem("role");
-  localStorage.removeItem("username");
-  localStorage.removeItem("token");
+      const headers = [
+        "项目名称",
+        "开始时间",
+        "项目单位",
+        "客户名",
+        "联系电话",
+        "客户经理",
+        "签约金额",
+        "合同",
+        "发票",
+        "回款",
+        "提成",
+        "课程顾问",
+        "课程编导",
+        "备注",
+        "创建时间",
+        "是否完成"
+      ];
 
-  // 隐藏用户栏，显示登录框
-  document.getElementById("userBar").style.display = "none";
-  document.getElementById("loginBox").style.display = "flex";
+      const rows = orders.map((o) => [
+        o.name || "",
+        o.startDate || "",
+        o.unit || "",
+        o.customer || "",
+        o.phone || "",
+        o.manager || "",
+        o.amount || "",
+        o.contract || "",
+        o.invoice || "",
+        o.payment || "",
+        o.commission || "",
+        o.consultant || "",
+        o.director || "",
+        o.remark || "",
+        o.createTime || "",
+        o.completed ? "已完成" : "未完成"
+      ]);
 
-  // 清空表格
-  const tbody = document.querySelector("#dataTable tbody");
-  if (tbody) tbody.innerHTML = "";
+      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "订单数据");
 
-  // 清空统计
-  const stats = document.getElementById("stats");
-  if (stats) stats.innerHTML = "";
+      const ts = new Date().toISOString().slice(0, 19).replace("T", "-");
+      XLSX.writeFile(workbook, `订单导出-${ts}.xlsx`);
+    }
 
-  // 清空搜索框
-  const kw = document.getElementById("keyword");
-  if (kw) kw.value = "";
+    function importOrdersExcel(event) {
+      if (currentRole !== "admin") {
+        alert("只有管理员可以导入数据");
+        return;
+      }
 
-  console.log("已退出登录");
-}
+      const file = event.target.files[0];
+      if (!file) return;
 
-/* ============================
-   深色模式切换
-   ============================ */
-function toggleTheme() {
-  document.body.classList.toggle("dark-mode");
-}
-/* ============================
-   文件结束：关闭 script
-   ============================ */
-</script>
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet);
 
+        orders = [];
+        rows.forEach((r) => {
+          orders.push({
+            name: r["项目名称"] || "",
+            startDate: r["开始时间"] || "",
+            unit: r["项目单位"] || "",
+            customer: r["客户名"] || "",
+            phone: r["联系电话"] || "",
+            manager: r["客户经理"] || "",
+            amount: r["签约金额"] || "",
+            contract: r["合同"] || "",
+            invoice: r["发票"] || "",
+            payment: r["回款"] || "",
+            commission: r["提成"] || "",
+            consultant: r["课程顾问"] || "",
+            director: r["课程编导"] || "",
+            remark: r["备注"] || "",
+            createTime: r["创建时间"] || new Date().toISOString(),
+            completed: r["是否完成"] === "已完成"
+          });
+        });
 
+        await saveOrdersToCloud();
+        render();
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    function openBackupManager() {
+      document.getElementById("backupModal").style.display = "flex";
+      loadBackupList();
+    }
+
+    function closeBackupManager() {
+      document.getElementById("backupModal").style.display = "none";
+    }
+
+    async function loadBackupList() {
+      const box = document.getElementById("backupList");
+      box.innerHTML = "加载中...";
+
+      try {
+        const res = await fetch("https://login-api.moon-2f1.workers.dev/listBackups");
+        const list = await res.json();
+
+        if (!list.length) {
+          box.innerHTML = "<p>暂无备份</p>";
+          return;
+        }
+
+        let html = "<table class='backup-table'><tr><th>备份日期</th><th>操作</th></tr>";
+        list.forEach(item => {
+          const key = item.name;
+          const date = key.replace("backup_", "");
+          html += `
+            <tr>
+              <td>${date}</td>
+              <td>
+                <button onclick="restoreBackup('${key}')">恢复</button>
+                <button onclick="deleteBackup('${key}')">删除</button>
+              </td>
+            </tr>
+          `;
+        });
+        html += "</table>";
+        box.innerHTML = html;
+      } catch (err) {
+        box.innerHTML = "加载失败";
+        console.error(err);
+      }
+    }
+
+    async function restoreBackup(key) {
+      if (!confirm(`确定恢复备份：${key.replace("backup_", "")}？当前订单将被覆盖！`)) return;
+
+      try {
+        const res = await fetch("https://login-api.moon-2f1.workers.dev/restoreBackup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          alert("恢复失败：" + data.message);
+          return;
+        }
+
+        alert("恢复成功！");
+        await loadOrdersFromCloud();
+        render();
+      } catch (err) {
+        alert("恢复失败");
+        console.error(err);
+      }
+    }
+
+    async function deleteBackup(key) {
+      if (!confirm(`确定删除备份：${key.replace("backup_", "")}？`)) return;
+
+      try {
+        await fetch("https://login-api.moon-2f1.workers.dev/saveOrders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deleteBackup: key })
+        });
+        alert("删除成功");
+        loadBackupList();
+      } catch (err) {
+        alert("删除失败");
+        console.error(err);
+      }
+    }
+
+    async function cleanupBackups() {
+      if (!confirm("确定清理30天前的备份？此操作不可恢复！")) return;
+
+      try {
+        await fetch("https://login-api.moon-2f1.workers.dev/cleanupBackups");
+        alert("清理完成");
+        loadBackupList();
+      } catch (err) {
+        alert("清理失败");
+        console.error(err);
+      }
+    }
+
+    function logout() {
+      currentRole = null;
+      orders = [];
+      editIndex = null;
+      deleteIndex = null;
+      completeIndex = null;
+      currentPage = 1;
+
+      localStorage.removeItem("role");
+      localStorage.removeItem("username");
+      localStorage.removeItem("token");
+
+      document.getElementById("userBar").style.display = "none";
+      document.getElementById("loginBox").style.display = "flex";
+
+      const tbody = document.querySelector("#dataTable tbody");
+      if (tbody) tbody.innerHTML = "";
+
+      const stats = document.getElementById("stats");
+      if (stats) stats.innerHTML = "";
+
+      const kw = document.getElementById("keyword");
+      if (kw) kw.value = "";
+
+      console.log("已退出登录");
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+    }
+  </script>
 </body>
 </html>
