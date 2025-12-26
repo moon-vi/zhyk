@@ -542,28 +542,18 @@
 
 /* 行基础过渡效果 */
 #dataTable tbody tr {
-  transition: 
-    background 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease;
 }
 
-/* 行 hover：无放大、无断层、柔光 + 内描边 */
+/* 行 hover：只负责阴影和层级，不管背景色 */
 #dataTable tbody tr:hover {
-  background: var(--row-hover-bg);
-  color: var(--row-hover-text);
-
-  /* 柔和阴影 + 内描边（不会断层） */
-  box-shadow:
-      0 2px 6px rgba(0,0,0,.10),
-      0 0 0 1px rgba(0,0,0,.08) inset;
-
+  box-shadow: 0 2px 6px rgba(0,0,0,.10);
   position: relative;
   z-index: 10;
 }
 
-/* sticky 列同步 hover 效果 */
+/* 颜色和质感全部交给 td 来统一控制 */
 #dataTable tbody tr:hover td {
   background: var(--row-hover-bg) !important;
   color: var(--row-hover-text) !important;
