@@ -351,6 +351,30 @@
       grid-column: span 2;
     }
 
+	 /* 固定操作列宽度，永远在最右侧 */
+.col-action {
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+    white-space: nowrap;
+    text-align: left;
+}
+ 
+	/* 项目单位：限制 20 字符宽度 */
+.col-unit {
+    max-width: 160px; /* 20 字符 ≈ 160px */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+ /* 项目名称：限制 30 字符宽度 */
+.col-name {
+    max-width: 240px; /* 30 字符 ≈ 240px */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+ 
     textarea {
       width: 100%;
       resize: vertical;
@@ -672,8 +696,8 @@
         <thead>
           <tr>
             <th>开始时间</th>
-            <th>项目单位</th>
-            <th>项目名称</th>
+            <th class="col-unit">项目单位</th>
+            <th class="col-name">项目名称</th>
             <th>客户名</th>
             <th>客户经理</th>
             <th>签约金额</th>
@@ -681,7 +705,7 @@
             <th>发票</th>
             <th>回款</th>
             <th>提成</th>
-            <th>操作</th>
+            <th class="col-action">操作</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -1172,8 +1196,8 @@ function render() {
 
     tr.innerHTML = `
       <td>${o.startDate || ""} ${o.completed ? `<span class="tag green">完成</span>` : ""}</td>
-      <td>${o.unit || ""}</td>
-      <td>${o.name || ""}</td>
+      <td class="col-unit">${o.unit || ""}</td>
+      <td class="col-name">${o.name || ""}</td>
       <td>${o.customer || ""}</td>
       <td>${o.manager || ""}</td>
       <td>${amountDisplay}</td>
@@ -1181,7 +1205,7 @@ function render() {
       <td>${tag(o.invoice || "")}</td>
       <td>${tag(o.payment || "")}</td>
       <td>${tag(o.commission || "")}</td>
-      <td>
+      <td class="col-action">
         <button onclick="edit(${idx});event.stopPropagation();" ${o.completed ? "disabled" : ""}>编辑</button>
         ${completeBtn}
         ${deleteBtn}
